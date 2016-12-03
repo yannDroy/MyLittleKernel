@@ -35,13 +35,16 @@ void ordonnance ();
 int32_t creer_processus_init ();
 
 /* Cree un processus dans la table des processus */
-int32_t creer_processus (void (*code)(void), char *nom);
+int32_t creer_processus (void (*code)(), char *nom, void *param);
 
 /* Termine un processus */
 void fin_processus ();
 
 /* Attend la terminaison d'un processus */
 void attendre_terminaison (int32_t pid);
+
+/* Arrete un processus */
+void tuer_processus (int32_t pid);
 
 /* Initialisation du processus principal */
 int8_t init_table_processus ();

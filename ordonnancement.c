@@ -5,6 +5,7 @@
 #include "ordonnancement.h"
 #include "shell.h"
 #include "horloge.h"
+#include "gui.h"
 #include "ecran.h"
 #include "aleatoire.h"
 
@@ -27,28 +28,31 @@ void ordonnance () {
 
     cli();
 
-    if(table_processus[indice_actif].etat != ENDORMI && table_processus[indice_actif].etat != ATTENTE_TERM && table_processus[indice_actif].etat != MORT)
+    if(table_processus[indice_actif].etat != ENDORMI
+       && table_processus[indice_actif].etat != ATTENTE_TERM
+       && table_processus[indice_actif].etat != MORT)
         table_processus[indice_actif].etat = ACTIVABLE;
 
     tmp = indice_actif;
     
     do{
         indice_actif = (indice_actif + 1) % NB_MAX_PROCESSUS;
-
-        if(table_processus[indice_actif].etat == ENDORMI && nbr_secondes() >= table_processus[indice_actif].heure_reveil){
+        
+        if(table_processus[indice_actif].etat == ENDORMI
+           && nbr_secondes() >= table_processus[indice_actif].heure_reveil){
             table_processus[indice_actif].heure_reveil = -1;
             break;
         }
     }while(table_processus[indice_actif].etat != ACTIVABLE);
 
     table_processus[indice_actif].etat = ELU;
-
-    sti();
     
     ctx_sw((int32_t*) &(table_processus[tmp].registres), (int32_t*) &(table_processus[indice_actif].registres));
+
+    sti();
 }
 
-int32_t creer_processus (void (*code)(), char *nom) {
+int32_t creer_processus (void (*code)(), char *nom, void *param) {
     char chaine[16];
     int32_t i;
     int32_t nouveau_pid;
@@ -60,35 +64,28 @@ int32_t creer_processus (void (*code)(), char *nom) {
 
     for(i = 1; i < NB_MAX_PROCESSUS; i++){
         if(table_processus[i].pid < 0 || table_processus[i].etat == MORT){
-            printf("ah je peux creer le %d\n", i);
             table_processus[i].pid = i;
-            strncpy(table_processus[i].nom, nom, strlen(nom));
+            strcpy(table_processus[i].nom, nom);
             
             table_processus[i].etat = ACTIVABLE;
             table_processus[i].heure_reveil = -1;
             
-            table_processus[i].registres[1] = (int32_t) &(table_processus[i].pile_execution[TAILLE_PILE_EXEC - 2]);
-            
-            table_processus[i].pile_execution[TAILLE_PILE_EXEC - 1] = (int32_t) &fin_processus;
-            table_processus[i].pile_execution[TAILLE_PILE_EXEC - 2] = (int32_t) code;
+            table_processus[i].registres[1] = (int32_t) &(table_processus[i].pile_execution[TAILLE_PILE_EXEC - 3]);
+
+            table_processus[i].pile_execution[TAILLE_PILE_EXEC - 1] = (int32_t) param;
+            table_processus[i].pile_execution[TAILLE_PILE_EXEC - 2] = (int32_t) &fin_processus;
+            table_processus[i].pile_execution[TAILLE_PILE_EXEC - 3] = (int32_t) code;
 
             nombre_processus++;
 
-            if(nombre_processus < 10)
-                sprintf(chaine, "PROCESSUS :   %d", nombre_processus);
-            else if(nombre_processus < 100)
-                sprintf(chaine, "PROCESSUS :  %d", nombre_processus);
-            else
-                sprintf(chaine, "PROCESSUS : %d", nombre_processus);
+            sprintf(chaine, "PROCESSUS : %3d", nombre_processus);
             
-            maj_GUI(chaine, C_MAJ_PROC, FORMAT_BLEU_FOND);
+            maj_GUI(chaine, C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
 
-            printf("pid cree: %d\n", i);
             nouveau_pid = i;
             
             break;
         }
-        printf("peux pas creer le %d : %d %s\n", i, table_processus[i].pid, table_processus[i].nom);
     }
 
     sti();
@@ -101,13 +98,14 @@ int32_t creer_processus_init () {
         return -1;
     }else{
         table_processus[0].pid = 0;
-        strncpy(table_processus[0].nom, "idle", 4);
+        strncpy(table_processus[0].nom, "idle\0", 5);
         table_processus[0].etat = ELU;
         table_processus[0].heure_reveil = -1;
 
         indice_actif = 0;
+        
         nombre_processus = 1;
-        maj_GUI("PROCESSUS :   1", C_MAJ_PROC, FORMAT_BLEU_FOND);
+        maj_GUI("PROCESSUS :   1", C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
 
         return 0;
     }
@@ -115,18 +113,14 @@ int32_t creer_processus_init () {
 
 void fin_processus () {
     char chaine[16];
-    
+
     table_processus[indice_actif].etat = ATTENTE_TERM;
+        
     nombre_processus--;
+    
+    sprintf(chaine, "PROCESSUS : %3d", nombre_processus);
 
-    if(nombre_processus < 10)
-        sprintf(chaine, "PROCESSUS :   %d", nombre_processus);
-    else if(nombre_processus < 100)
-        sprintf(chaine, "PROCESSUS :  %d", nombre_processus);
-    else
-        sprintf(chaine, "PROCESSUS : %d", nombre_processus);
-
-    maj_GUI(chaine, C_MAJ_PROC, FORMAT_BLEU_FOND);
+    maj_GUI(chaine, C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
 
     ordonnance();
 }
@@ -141,16 +135,20 @@ void attendre_terminaison (int32_t pid) {
 
 int8_t init_table_processus () {
     int32_t i;
+
+    nombre_processus = 0;
     
-    for(i = 0; i < TAILLE_TABLE_PROCESSUS; i++)
+    for(i = 0; i < TAILLE_TABLE_PROCESSUS; i++){
         table_processus[i].pid = -1;
+        table_processus[i].etat = MORT;
+        strncpy(table_processus[i].nom, "null\0", 5);
+        table_processus[i].heure_reveil = -1;
+    }
     
     if(creer_processus_init() < 0){
         printf("[ERREUR] Impossible de creer le processus init\n");
         return -1;
     }
-
-    jobs();
 
     return 0;
 }

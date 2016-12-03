@@ -4,6 +4,7 @@
 #include <cpu.h>
 #include "horloge.h"
 #include "ecran.h"
+#include "gui.h"
 #include "ordonnancement.h"
 #include "interruption.h"
 
@@ -19,6 +20,8 @@ uint32_t nbr_secondes () {
 void tic_PIT () {
     int32_t sec;
     char s[8];
+
+    cli();
     
     outb(0x20, PORT_OUT_PIT_CLOCK);
 
@@ -28,11 +31,12 @@ void tic_PIT () {
         sec = nbr_secondes();
         sprintf(s, "%.2d:%.2d:%.2d", (sec / 3600), (sec % 3600) / 60, (sec % 3600) % 60);
         
-        maj_GUI(s, C_MAJ_CLOCK, FORMAT_ROUGE_FOND);
+        maj_GUI(s, C_MAJ_CLOCK, TEXTE_ROUGE | FOND_GRIS);
     }
 
-    if(temps % (CLOCKFREQ / 20) == 0)
-        ordonnance();
+    ordonnance();
+
+    sti();
 }
 
 void init_clock () {

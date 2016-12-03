@@ -6,7 +6,7 @@
 uint32_t ligne = PREMIERE_LIGNE;
 uint32_t colonne = PREMIERE_COLONNE;
 
-uint8_t format = FORMAT_BLANC;
+uint8_t format = TEXTE_BLANC | FOND_NOIR;
 
 uint16_t *ptr_mem (uint32_t lig, uint32_t col) {
     return (uint16_t*) (MEM_ECRAN + 2 * (lig * NB_COLONNES + col));
@@ -24,7 +24,7 @@ void efface_ecran (uint32_t depart) {
     uint8_t save_format;
 
     save_format = format;
-    format = FORMAT_NOIR;
+    format = TEXTE_NOIR | FOND_NOIR;
 
     for(i = depart; i < NB_LIGNES; i++){
         for(j = 0; j < NB_COLONNES; j++) {
@@ -36,11 +36,10 @@ void efface_ecran (uint32_t depart) {
     colonne = PREMIERE_COLONNE;
 
     format = save_format;
-
     place_curseur(depart, PREMIERE_COLONNE);
 }
 
-void place_curseur(uint32_t lig, uint32_t col) {
+void place_curseur (uint32_t lig, uint32_t col) {
     uint16_t position;
 
     position = (NB_COLONNES * lig) + col;
@@ -124,7 +123,7 @@ void defilement () {
     memmove(ptr_mem(PREMIERE_LIGNE, PREMIERE_COLONNE), ptr_mem(PREMIERE_LIGNE + 1, PREMIERE_COLONNE), (NB_COLONNES * (NB_LIGNES - 1) * sizeof(uint16_t)));
 
     save_format = format;
-    format = FORMAT_NOIR;
+    format = TEXTE_NOIR | FOND_NOIR;
 
     for(i = 0; i < NB_COLONNES; i++)
         ecrit_car(NB_LIGNES - 1, i, ' ');
@@ -137,57 +136,4 @@ void console_putbytes (char *chaine, int32_t taille) {
     
     for(i = 0; i < taille; i++)
         traite_car(chaine[i]);
-}
-
-void maj_GUI (char *chaine, uint32_t col, uint8_t f) {
-    uint32_t save_l;
-    uint32_t save_c;
-    uint8_t save_format;
-
-    save_l = ligne;
-    save_c = colonne;
-    save_format = format;
-
-    format = f;
-   
-    ligne = 0;
-    colonne = col;
-    place_curseur(ligne, colonne);
-    
-    console_putbytes(chaine, strlen(chaine));
-
-    ligne = save_l;
-    colonne = save_c;
-    format = save_format;
-    place_curseur(ligne, colonne);
-}
-
-void creer_barre () {
-    int32_t i;
-    uint8_t save_format;
-
-    save_format = format;
-    format = FORMAT_NOIR_FOND;
-    
-    for(i = 0; i < NB_COLONNES; i++)
-        ecrit_car(0, i, ' ');
-
-    format = save_format;
-}
-
-void init_affichage () {
-    efface_ecran(0);
-
-    creer_barre();
-    
-    maj_GUI("MLK 0.1", C_MAJ_NOM, FORMAT_MAGENTA_FOND);
-    maj_GUI("|", C_PIPE1, FORMAT_NOIR_FOND);
-
-    maj_GUI("PROCESSUS :   0", C_MAJ_PROC, FORMAT_BLEU_FOND);
-    maj_GUI("|", C_PIPE2, FORMAT_NOIR_FOND);
-
-    maj_GUI("UTILISATEUR : ---", C_MAJ_USER, FORMAT_MARRON_FOND);
-    
-    maj_GUI("00:00:00", C_MAJ_CLOCK, FORMAT_ROUGE_FOND);
-    maj_GUI("|", C_PIPE3, FORMAT_NOIR_FOND);
 }

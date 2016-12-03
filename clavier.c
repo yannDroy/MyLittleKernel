@@ -4,6 +4,7 @@
 #include <string.h>
 #include "clavier.h"
 #include "interruption.h"
+#include "shell.h"
 #include "ecran.h"
 
 extern uint32_t ligne;
@@ -24,6 +25,8 @@ int8_t inser = 0;
 
 void clavier_PIT () {
     int8_t c;
+
+    cli();
     
     outb(0x20, PORT_OUT_PIT_KB);
 
@@ -32,23 +35,23 @@ void clavier_PIT () {
 
         traiter_touche(c);
     }
+
+    sti();
 }
 
 void lire_clavier (char* tmp, int32_t taille, int8_t mode) {
-    sti();
-
     vider_buffer();
     input = 1;
     rempli = 0;
     visible = mode;
     
-    while(!rempli && buffer[taille - 1] == '\0');
+    while(!rempli && buffer[taille - 2] == '\0');
 
     input = 0;
     rempli = 0;
     visible = 1;
 
-    strncpy(tmp, buffer, taille);
+    strncpy(tmp, buffer, strlen(buffer));
 }
 
 void init_clavier () {
@@ -278,6 +281,10 @@ void traiter_touche (int8_t c) {
         break;
     case KB_ENTER :
         if(input){
+            while(indice < MAX_TAILLE_BUFFER){
+                buffer[indice] = '\0';
+                indice++;
+            }
             rempli = 1;
             printf("\n");
         }else{
@@ -449,9 +456,11 @@ void traiter_touche (int8_t c) {
         break;
     }
 
-    if(buffer[MAX_TAILLE_BUFFER - 1] != '\0'){
+    if(indice == MAX_TAILLE_BUFFER - 1){
         if(input){
+            buffer[indice] = '\0';
             rempli = 1;
+            printf("\n");
         }else{
             printf("\n");
             vider_buffer();
