@@ -122,7 +122,7 @@ void users () {
     sti();
     
     if(!strcmp(utilisateur, "root")){
-        printf("*** Liste des utilisateurs du systeme :\n");
+        printf("   *** Liste des utilisateurs du systeme :\n");
         printf("  _______________________________________________\n");
         printf(" |   nom d'utilisateur   |      mot de passe     |\n");
         printf(" |-----------------------+-----------------------|\n");
@@ -187,36 +187,33 @@ void help () {
     sti();
 
     format = TEXTE_BLANC | FOND_NOIR;
-    printf("*** Liste des commandes shell :\n");
-    
+    printf("   *** Liste des commandes shell :\n");
+
     format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - clear : nettoie l'ecran\n");
+    printf(" Systeme :\n");
+    printf("  - clear : nettoie l'ecran\n");
+    printf("  - su : passe en mode super utilisateur\n");
+    printf("  - users : affiche la liste des utilisateurs du systeme\n");
+    printf("  - jobs : affiche les processus en cours d'execution\n");
+    printf("  - sleep <entier> : sieste de <entier> secondes\n");
+    printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
+    printf("  - help : affiche cette aide\n");
+
+    format = TEXTE_JAUNE | FOND_NOIR;
+    printf(" Mathematiques :\n");
+    printf("  - srand <entier> : initialise la suite aleatoire\n");
+    printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
+    printf("  - fact <entier> : calcule la factorielle de <entier>\n");
+
     format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - hello [<chaine>] : dit bonjour\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - tictactoe : jeu de tic-tac-toe contre l'IA\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - srand <entier> : initialise la suite aleatoire\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - infinity : processus de boucle infinie\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - fact <entier> : calcule la factorielle de <entier>\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - beer <entier> : il reste <entier> biere(s) a boire\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - sleep <entier> : sieste de <entier> secondes\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - jobs : affiche les processus en cours d'execution\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - users : affiche la liste des utilisateurs du systeme\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - su : passe en mode super utilisateur\n");
-    format = TEXTE_CYAN | FOND_NOIR;
-    printf(" - help : affiche cette aide\n");
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" - exit : sort du mode super utilisateur ou quitte le shell\n");
+    printf(" Jeux :\n");
+    printf("  - tictactoe : jeu de tic-tac-toe contre l'IA (un srand avant, c'est mieux)\n");
+
+    format = TEXTE_MARRON | FOND_NOIR;
+    printf(" Divers :\n");
+    printf("  - hello [<chaine>] : dit bonjour\n");
+    printf("  - beer <entier> : il reste <entier> biere(s) a boire\n");
+    printf("  - infinity : processus de boucle infinie\n");
 }
 
 void jobs () {
@@ -224,7 +221,7 @@ void jobs () {
     
     sti();
 
-    printf(" *** Liste des processus (%d) :\n", nombre_processus);
+    printf("   *** Liste des processus (%d) :\n", nombre_processus);
     printf("  ______________________________________________________\n");
     printf(" | PID | PROPRIETAIRE |         nom         |    etat   |\n");
     printf(" |-----+--------------+---------------------+-----------|\n");
