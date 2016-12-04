@@ -4,7 +4,10 @@
 int32_t suivant = 123456;
 
 void srand (int32_t n) {
-    suivant = n;
+    if(n >= 0)
+        suivant = n;
+    else
+        suivant = -n;
 }
 
 int32_t crand48 () {

@@ -17,7 +17,7 @@
 #define C_NOM 40
 
 #define L_LOGIN 15
-#define C_LOGIN 20
+#define C_LOGIN 21
 
 #define L_IDENT_INCORR C_LOGIN
 #define C_IDENT_INCORR C_LOGIN

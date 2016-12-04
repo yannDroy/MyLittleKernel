@@ -10,6 +10,8 @@
 #include "clavier.h"
 #include "aleatoire.h"
 
+extern char utilisateur[TAILLE_LOGIN];
+
 void kernel_start () {
     init_affichage();
     init_clock();
@@ -17,6 +19,8 @@ void kernel_start () {
 
     srand(111);
     printf("\f");
+
+    strncpy(utilisateur, "root\0", 5);
 
     if(!init_table_processus())
         init();

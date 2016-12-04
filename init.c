@@ -20,7 +20,7 @@ void init () {
         attendre_terminaison(pid);
     
     for(;;){
-        sti(); 
+        sti();
         hlt();
         cli();
     }

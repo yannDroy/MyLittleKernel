@@ -281,10 +281,10 @@ void traiter_touche (int8_t c) {
         break;
     case KB_ENTER :
         if(input){
-            while(indice < MAX_TAILLE_BUFFER){
+            /*while(indice < MAX_TAILLE_BUFFER){
                 buffer[indice] = '\0';
                 indice++;
-            }
+                }*/
             rempli = 1;
             printf("\n");
         }else{

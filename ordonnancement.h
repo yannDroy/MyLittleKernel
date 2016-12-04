@@ -7,8 +7,10 @@
 
 #define TAILLE_PILE_EXEC 512
 
-#define NB_MAX_PROCESSUS 10
-#define TAILLE_TABLE_PROCESSUS 100
+#define NB_MAX_PROCESSUS 64
+#define TAILLE_TABLE_PROCESSUS NB_MAX_PROCESSUS
+
+enum { UTILISATEUR, ROOT };
 
 enum { ELU, ACTIVABLE, ENDORMI, ATTENTE_TERM, MORT };
 
@@ -17,7 +19,9 @@ typedef struct Processus {
     int32_t pid;
     char nom[MAX_PROC_NAME];
     uint8_t etat;
+    int8_t proprietaire;
     uint32_t heure_reveil;
+    int8_t a_attendre;
     int32_t registres[5];
     int32_t pile_execution[TAILLE_PILE_EXEC];
 } Processus;
@@ -36,6 +40,9 @@ int32_t creer_processus_init ();
 
 /* Cree un processus dans la table des processus */
 int32_t creer_processus (void (*code)(), char *nom, void *param);
+
+/* Appel de la mise a jour GUI */
+void maj_nb_processus (int8_t p);
 
 /* Termine un processus */
 void fin_processus ();

@@ -1,0 +1,272 @@
+#include <cpu.h>
+#include <stdio.h>
+#include <string.h>
+#include <inttypes.h>
+#include "horloge.h"
+#include "ordonnancement.h"
+#include "aleatoire.h"
+#include "ecran.h"
+#include "clavier.h"
+#include "shell.h"
+#include "gui.h"
+#include "commandes.h"
+
+extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
+extern uint32_t nombre_processus;
+extern int32_t indice_actif;
+
+extern int32_t nb_utilisateurs;
+extern char utilisateurs[][2][TAILLE_LOGIN];
+extern char utilisateur[TAILLE_LOGIN];
+extern char ancien_utilisateur[TAILLE_LOGIN];
+
+extern uint8_t format;
+
+extern int32_t arret;
+
+void clear () {
+    sti();
+    printf("\f");
+}
+
+void hello (char *s) {
+    sti();
+    
+    if(!s)
+        printf("Hello world !\n");
+    else
+        printf("Hello %s !\n", s);
+}
+
+void beer (void *n) {
+    int32_t i;
+    
+    sti();
+
+    for(i = (int32_t) n; i > 0; i--)
+        printf("%d more beer%s to drink...\n", i, (i > 1)?"s":"");
+}
+
+void rand (void *n) {
+    sti();
+    printf("Nombre aleatoire : %d\n", crand48() % (int) n);
+}
+
+void init_rand (void *n) {
+    sti();
+    srand((int32_t) n);
+}
+
+void infinity () {
+    sti();
+    while(1);
+}
+
+void fact (void *n) {
+    int32_t i;
+    int32_t r;
+    
+    sti();
+
+    r = (int32_t) n;
+    
+    if(r < 0){
+        printf("Nombre positif ou nul attendu !\n");
+    }else if(r <= 1){
+        printf("%d! = 1\n", r);
+    }else{
+        for(i = 1; i < (int32_t) n; i++)
+            r *= i;
+        printf("%d! = %d\n", (int32_t) n, r);
+    }
+}
+
+void sleep (void *n) {
+    sti();
+    dors((uint32_t) n);
+}
+
+void su () {
+    char gui[TAILLE_LOGIN + 15];
+    char mdp[TAILLE_LOGIN];
+    int32_t i;
+
+    sti();
+    
+    if(strcmp(utilisateur, "root")){
+        printf("Mot de passe : ");
+        lire_clavier(mdp, TAILLE_LOGIN, CACHE);
+
+        for(i = 0; i < nb_utilisateurs; i++){
+            if(!strncmp(utilisateurs[i][0], "root", TAILLE_LOGIN)
+               && !strncmp(utilisateurs[i][1], mdp, TAILLE_LOGIN)){
+                strcpy(ancien_utilisateur, utilisateur);
+                strncpy(utilisateur, "root\0", 5);
+                
+                sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
+                maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+
+                return;
+            }
+        }
+
+        printf("Erreur d'authentification\n");
+    }else{
+        printf("Vous etes deja super utilisateur\n");
+    }
+}
+
+void users () {
+    int32_t i, j;
+
+    sti();
+    
+    if(!strcmp(utilisateur, "root")){
+        printf("*** Liste des utilisateurs du systeme :\n");
+        printf("  _______________________________________________\n");
+        printf(" |   nom d'utilisateur   |      mot de passe     |\n");
+        printf(" |-----------------------+-----------------------|\n");
+        
+        for(i = 0; i < nb_utilisateurs; i++){
+            printf(" |");
+            for(j = 0; j < TAILLE_LOGIN + 1 - strlen(utilisateurs[i][0]); j++)
+                printf(" ");
+            printf("%s |", utilisateurs[i][0]);
+            for(j = 0; j < TAILLE_LOGIN + 1 - strlen(utilisateurs[i][1]); j++)
+                printf(" ");
+            printf("%s |\n", utilisateurs[i][1]);
+        }
+
+        printf(" '-----------------------+-----------------------'\n");
+    }else{
+        printf("Vous devez etre super utilisateur pour voir la liste des utilisateurs\n");
+    }
+}
+
+void kill (void *n) {
+    int32_t pid;
+    
+    sti();
+
+    pid = (int32_t) n;
+
+    if(pid >= 0 && pid < NB_MAX_PROCESSUS){
+        if(table_processus[pid].proprietaire == ROOT){
+            if(!strcmp(utilisateur, "root"))
+                tuer_processus(pid);
+            else
+                printf("Vous devez etre super utilisateur pour tuer ce processus\n");
+        }else{
+            tuer_processus(pid);
+        }
+    }else{
+        printf("Aucun processus a tuer\n");
+    }
+}
+
+void quitter () {
+    char gui[TAILLE_LOGIN + 15];
+    
+    if(!strcmp(utilisateur, "root")){
+        if(strcmp(ancien_utilisateur, "root")){
+            strcpy(utilisateur, ancien_utilisateur);
+            
+            sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
+            maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+        }else{
+            printf("Bye.\n");
+            arret = 1;
+        }
+    }else{
+        printf("Bye.\n");
+        arret = 1;
+    }
+}
+
+void help () {
+    sti();
+
+    format = TEXTE_BLANC | FOND_NOIR;
+    printf("*** Liste des commandes shell :\n");
+    
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - clear : nettoie l'ecran\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - hello [<chaine>] : dit bonjour\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - tictactoe : jeu de tic-tac-toe contre l'IA\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - srand <entier> : initialise la suite aleatoire\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - infinity : processus de boucle infinie\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - fact <entier> : calcule la factorielle de <entier>\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - beer <entier> : il reste <entier> biere(s) a boire\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - sleep <entier> : sieste de <entier> secondes\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - jobs : affiche les processus en cours d'execution\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - users : affiche la liste des utilisateurs du systeme\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - su : passe en mode super utilisateur\n");
+    format = TEXTE_CYAN | FOND_NOIR;
+    printf(" - help : affiche cette aide\n");
+    format = TEXTE_BLEU_C | FOND_NOIR;
+    printf(" - exit : sort du mode super utilisateur ou quitte le shell\n");
+}
+
+void jobs () {
+    int32_t i, j;
+    
+    sti();
+
+    printf(" *** Liste des processus (%d) :\n", nombre_processus);
+    printf("  ______________________________________________________\n");
+    printf(" | PID | PROPRIETAIRE |         nom         |    etat   |\n");
+    printf(" |-----+--------------+---------------------+-----------|\n");
+    
+    for(i = 0; i < NB_MAX_PROCESSUS; i++){
+        if(table_processus[i].pid >= 0){
+            if(table_processus[i].pid < 10)
+                printf(" |  %d  |", table_processus[i].pid);
+            else if(table_processus[i].pid < 100)
+                printf(" |  %d |", table_processus[i].pid);
+
+            if(table_processus[i].proprietaire == ROOT)
+                printf("     ROOT     |");
+            else
+                printf("  UTILISATEUR |");
+
+            for(j = 0; j < 20 - strlen(table_processus[i].nom); j++)
+                printf(" ");
+            printf("%s ", table_processus[i].nom);
+
+            switch(table_processus[i].etat){
+            case MORT:
+                printf("|   MORT    |\n");
+                table_processus[i].pid = -1;
+                break;
+            case ELU:
+                printf("|    ELU    |\n");
+                break;
+            case ACTIVABLE:
+                printf("| ACTIVABLE |\n");
+                break;
+            case ENDORMI:
+                printf("|  ENDORMI  |\n");
+                break;
+            case ATTENTE_TERM:
+                printf("| ATTENTE_T |\n");
+                break;
+            default:
+                break;
+            }
+        }
+    }
+
+    printf(" '-----+--------------+---------------------+-----------'\n");
+}

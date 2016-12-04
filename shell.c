@@ -3,18 +3,23 @@
 #include <cpu.h>
 #include "ecran.h"
 #include "clavier.h"
-#include "aleatoire.h"
 #include "horloge.h"
+#include "malloc.c.h"
 #include "gui.h"
 #include "ordonnancement.h"
+#include "commandes.h"
+#include "tictactoe.h"
 #include "shell.h"
-#include "malloc.c.h"
+
+extern void tictactoe();
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
-extern char utilisateur[TAILLE_LOGIN];
-extern uint8_t format;
 extern uint32_t nombre_processus;
 extern int32_t indice_actif;
+
+extern uint32_t ligne;
+extern uint32_t colonne;
+extern uint8_t format;
 
 int32_t nb_utilisateurs = 4;
 char utilisateurs[][2][TAILLE_LOGIN] = {
@@ -23,6 +28,7 @@ char utilisateurs[][2][TAILLE_LOGIN] = {
     {"test", "test"},
     {"invite", ""},
 };
+char utilisateur[TAILLE_LOGIN];
 char ancien_utilisateur[TAILLE_LOGIN];
 
 int32_t arret;
@@ -38,6 +44,9 @@ void shell () {
 
     format = TEXTE_JAUNE | FOND_NOIR;
     printf("\f\n  *** MyLittleKernel 0.1 ***\n\n");
+
+    format = TEXTE_GRIS | FOND_NOIR;
+    printf("commande 'help' pour afficher l'aide\n");
 
     arret = 0;
     do{
@@ -57,6 +66,7 @@ void shell () {
         else
             format = TEXTE_ROUGE_C | FOND_NOIR;
         printf("%s@MLK_$> ", utilisateur);
+        
         format = TEXTE_BLANC | FOND_NOIR;
         
         lire_clavier(commande, MAX_TAILLE_BUFFER, VISIBLE);
@@ -86,206 +96,23 @@ void decouper_commande (char* chaine, char **tokens) {
     strcpy(tokens[i], "");
 }
 
-void clear () {
-    sti();
-    printf("\f");
-}
-
-void hello (char *s) {
-    sti();
-    
-    if(!s)
-        printf("Hello world !\n");
-    else
-        printf("Hello %s !\n", s);
-}
-
-void beer (void *n) {
-    int32_t i;
-    
-    sti();
-
-    for(i = (int32_t) n; i > 0; i--)
-        printf("%d more beer%s to drink...\n", i, (i > 1)?"s":"");
-}
-
-void rand (void *n) {
-    sti();
-    printf("Nombre aleatoire : %d\n", crand48() % (int)n);
-}
-
-void fact (void *n) {
-    int32_t i;
-    int32_t r;
-    
-    sti();
-
-    r = (int32_t) n;
-    
-    if(r < 0){
-        printf("Nombre positif ou nul attendu !\n");
-    }else if(r <= 1){
-        printf("%d! = 1\n", r);
-    }else{
-        for(i = 1; i < (int32_t) n; i++)
-            r *= i;
-        printf("%d! = %d\n", (int32_t) n, r);
-    }
-}
-
-void sleep (void *n) {
-    sti();
-    dors((uint32_t) n);
-}
-
-void su () {
-    char gui[TAILLE_LOGIN + 15];
-    char mdp[TAILLE_LOGIN];
-    int32_t i;
-
-    sti();
-    
-    if(strcmp(utilisateur, "root")){
-        printf("Mot de passe : ");
-        lire_clavier(mdp, TAILLE_LOGIN, CACHE);
-
-        for(i = 0; i < nb_utilisateurs; i++){
-            if(!strncmp(utilisateurs[i][0], "root", TAILLE_LOGIN)
-               && !strncmp(utilisateurs[i][1], mdp, TAILLE_LOGIN)){
-                strcpy(ancien_utilisateur, utilisateur);
-                strncpy(utilisateur, "root\0", 5);
-                
-                sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
-                maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
-
-                return;
-            }
-        }
-
-        printf("Erreur d'authentification\n");
-    }else{
-        printf("Vous etes deja super utilisateur\n");
-    }
-}
-
-void users () {
-    int32_t i, j;
-
-    sti();
-    
-    if(!strcmp(utilisateur, "root")){
-        printf("*** Liste des utilisateurs du systeme :\n");
-        printf("  _______________________________________________\n");
-        printf(" |                       |                       |\n");
-        printf(" |-----------------------+-----------------------|\n");
-        
-        for(i = 0; i < nb_utilisateurs; i++){
-            printf(" |");
-            for(j = 0; j < TAILLE_LOGIN + 1 - strlen(utilisateurs[i][0]); j++)
-                printf(" ");
-            printf("%s |", utilisateurs[i][0]);
-            for(j = 0; j < TAILLE_LOGIN + 1 - strlen(utilisateurs[i][1]); j++)
-                printf(" ");
-            printf("%s |\n", utilisateurs[i][1]);
-        }
-
-        printf(" '-----------------------+-----------------------'\n");
-    }else{
-        printf("Vous devez etre super utilisateur pour voir la liste des utilisateurs\n");
-    }
-}
-
-void quitter () {
-    char gui[TAILLE_LOGIN + 15];
-    
-    if(!strcmp(utilisateur, "root")){
-        if(strcmp(ancien_utilisateur, "root")){
-            strcpy(utilisateur, ancien_utilisateur);
-            
-            sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
-            maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
-        }else{
-            printf("Bye.\n");
-            arret = 1;
-        }
-    }else{
-        printf("Bye.\n");
-        arret = 1;
-    }
-}
-
-void help () {
-    sti();
-
-    format = TEXTE_BLEU_C | FOND_NOIR;
-    printf("*** Liste des commandes shell :\n");
-    printf(" - clear : nettoie l'ecran\n");
-    printf(" - hello [<chaine>] : dit bonjour\n");
-    printf(" - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
-    printf(" - fact <entier> : calcule la factorielle de <entier>\n");
-    printf(" - beer <entier> : il reste <entier> biere(s) a boire\n");
-    printf(" - sleep <entier> : sieste de <entier> secondes\n");
-    printf(" - jobs : affiche les processus en cours d'execution\n");
-    printf(" - users : affiche la liste des utilisateurs du systeme\n");
-    printf(" - su : passe en mode super utilisateur\n");
-    printf(" - help : affiche cette aide\n");
-    printf(" - exit : sort du mode super utilisateur ou quitte le shell\n");
-}
-
-void jobs () {
-    int32_t i, j;
-    
-    sti();
-
-    printf(" *** Liste des processus (%d) :\n", nombre_processus);
-    printf("  _______________________________________\n");
-    printf(" | PID |         nom         |    etat   |\n");
-    printf(" |-----+---------------------+-----------|\n");
-    
-    for(i = 0; i < NB_MAX_PROCESSUS; i++){
-        if(table_processus[i].pid >= 0){
-            if(table_processus[i].pid < 10)
-                printf(" |  %d  |", table_processus[i].pid);
-            else if(table_processus[i].pid < 100)
-                printf(" |  %d |", table_processus[i].pid);
-
-            for(j = 0; j < 20 - strlen(table_processus[i].nom); j++)
-                printf(" ");
-            printf("%s ", table_processus[i].nom);
-
-            switch(table_processus[i].etat){
-            case MORT:
-                printf("|    MORT   |\n");
-                break;
-            case ELU:
-                printf("|    ELU    |\n");
-                break;
-            case ACTIVABLE:
-                printf("| ACTIVABLE |\n");
-                break;
-            case ENDORMI:
-                printf("|  ENDORMI  |\n");
-                break;
-            case ATTENTE_TERM:
-                printf("| ATTENTE_T |\n");
-                break;
-            default:
-                break;
-            }
-        }
-    }
-
-    printf(" '-----+---------------------+-----------'\n");
-}
-
 void executer_commande (char **tokens) {
     char nom[TAILLE_COMMANDE];
     int32_t pid;
     int32_t param_int;
     
     if(!strcmp(tokens[0], "exit")){
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&quitter, "exit\0", NULL);
+            if(pid > 0)
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "tictactoe")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&tictactoe, "tictactoe\0", NULL);
             if(pid > 0)
                 attendre_terminaison(pid);
         }else{
@@ -293,73 +120,82 @@ void executer_commande (char **tokens) {
         }
         
     }else if(!strcmp(tokens[0], "clear")) {
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&clear, "clear\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
         }
 
     }else if(!strcmp(tokens[0], "su")) {
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&su, "su\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
         }
-        
-    }else if(!strcmp(tokens[0], "hello")){
-        if(!strcmp(tokens[1], "")){
-            pid = creer_processus(&hello, "hello\0", NULL);
-            if(pid > 0)
-                attendre_terminaison(pid);
-        }else{
-            if(!strcmp(tokens[2], "")){
-                sprintf(nom, "hello %s", tokens[1]);
-                pid = creer_processus(&hello, nom, (void*) tokens[1]);
-                if(pid > 0)
-                    attendre_terminaison(pid);
-            }else{
-                printf("Un seul (ou aucun) argument attendu : chaine !\n");
-            }
-        }
-        
+
     }else if(!strcmp(tokens[0], "jobs")){
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&jobs, "jobs\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
         }
-        
+
+    }else if(!strcmp(tokens[0], "infinity")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&infinity, "infinity\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
     }else if(!strcmp(tokens[0], "help")){
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&help, "help\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
         }
 
     }else if(!strcmp(tokens[0], "users")){
-        if(!strcmp(tokens[1], "")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&users, "users\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
         }
+        
+    }else if(!strcmp(tokens[0], "hello")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&hello, "hello\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                sprintf(nom, "hello %s", tokens[1]);
+                pid = creer_processus(&hello, nom, (void*) tokens[1]);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul (ou aucun) argument attendu : chaine !\n");
+            }
+        }
 
     }else if(!strcmp(tokens[0], "beer")){
         if(strcmp(tokens[1], "")){
-            if(!strcmp(tokens[2], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "beer %d", param_int);
                 pid = creer_processus(&beer, nom, (void*) param_int);
-                if(pid > 0)
+                if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{
                 printf("Un seul parametre attendu : entier !\n");
@@ -368,13 +204,13 @@ void executer_commande (char **tokens) {
             printf("Un entier attendu en parametre !\n");
         }
 
-    }else if(!strcmp(tokens[0], "fact")){
+    }else if(!strcmp(tokens[0], "beer")){
         if(strcmp(tokens[1], "")){
-            if(!strcmp(tokens[2], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
                 param_int = atoi(tokens[1]);
-                sprintf(nom, "fact %d", param_int);
-                pid = creer_processus(&fact, nom, (void*) param_int);
-                if(pid > 0)
+                sprintf(nom, "beer %d", param_int);
+                pid = creer_processus(&beer, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{
                 printf("Un seul parametre attendu : entier !\n");
@@ -385,11 +221,26 @@ void executer_commande (char **tokens) {
         
     }else if(!strcmp(tokens[0], "rand")){
         if(strcmp(tokens[1], "")){
-            if(!strcmp(tokens[2], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "rand %d", param_int);
                 pid = creer_processus(&rand, nom, (void*) param_int);
-                if(pid > 0)
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "srand")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "srand %d", param_int);
+                pid = creer_processus(&init_rand, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{
                 printf("Un seul parametre attendu : entier !\n");
@@ -400,11 +251,26 @@ void executer_commande (char **tokens) {
 
     }else if(!strcmp(tokens[0], "sleep")){
         if(strcmp(tokens[1], "")){
-            if(!strcmp(tokens[2], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "sleep %d", param_int);
                 pid = creer_processus(&sleep, nom, (void*) param_int);
-                if(pid > 0)
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "kill")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "kill %d", param_int);
+                pid = creer_processus(&kill, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{
                 printf("Un seul parametre attendu : entier !\n");
@@ -414,7 +280,7 @@ void executer_commande (char **tokens) {
         }
         
     }else if(strcmp(tokens[0], "")){
-        printf("Commande inconnue !\n");
+        printf("Commande inconnue '%s' !\n", tokens[0]);
     }
 }
 
@@ -426,9 +292,9 @@ int32_t atoi (char* c) {
     signe = 1;
     
     if(*c == '+' || *c == '-'){
-       if(*c == '-')
-           signe = -1;
-       c++;
+        if(*c == '-')
+            signe = -1;
+        c++;
     }
     
     while(*c >= '0' && *c <= '9'){
@@ -438,4 +304,61 @@ int32_t atoi (char* c) {
     }
 
     return valeur * signe;
+}
+
+void login () {
+    char gui[TAILLE_LOGIN + 15];
+    char *test_login;
+    char *test_mdp;
+    int32_t i;
+    int8_t ok;
+
+    sti();
+
+    dessine_MLK();
+    
+    ok = 0;
+    
+    while(!ok){
+        prompt_login();
+
+        test_login = (char*) malloc(TAILLE_LOGIN * sizeof(char));
+        for(i = 0; i < TAILLE_LOGIN; i++)
+            test_login[i] = '\0';
+
+        test_mdp = (char*) malloc(TAILLE_LOGIN * sizeof(char));
+        for(i = 0; i < TAILLE_LOGIN; i++)
+            test_mdp[i] = '\0';
+
+        format = TEXTE_ROUGE_C | FOND_BLEU;
+        ligne = L_LOGIN + 1;
+        colonne = C_LOGIN + 17;
+        place_curseur(ligne, colonne);
+        lire_clavier(test_login, TAILLE_LOGIN, VISIBLE);
+
+        format = TEXTE_VERT_C | FOND_BLEU;
+        ligne = L_LOGIN + 2;
+        colonne = C_LOGIN + 17;
+        place_curseur(ligne, colonne);
+        lire_clavier(test_mdp, TAILLE_LOGIN, CACHE);
+        
+        for(i = 0; i < nb_utilisateurs; i++){
+            if(!strncmp(utilisateurs[i][0], test_login, TAILLE_LOGIN)
+               && !strncmp(utilisateurs[i][1], test_mdp, TAILLE_LOGIN)){
+                ok = 1;
+                
+                strncpy(utilisateur, test_login, TAILLE_LOGIN);
+                sprintf(gui, "UTILISATEUR : %-21s", test_login);
+                maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+                
+                break;
+            }
+        }
+        
+        if(!ok)
+            identifiants_incorrects();
+
+        free(test_login);
+        free(test_mdp);
+    }
 }

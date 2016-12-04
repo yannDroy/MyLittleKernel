@@ -9,11 +9,11 @@
 
 extern int32_t nb_utilisateurs;
 extern char utilisateurs[][2][TAILLE_LOGIN];
+extern char utilisateur[TAILLE_LOGIN];
+
 extern uint32_t ligne;
 extern uint32_t colonne;
 extern uint8_t format;
-
-char utilisateur[TAILLE_LOGIN];
 
 void maj_GUI (char *chaine, uint32_t col, uint8_t f) {
     uint32_t save_l;
@@ -69,54 +69,6 @@ void init_affichage () {
     maj_GUI("|", C_PIPE3, TEXTE_NOIR | FOND_GRIS);
 }
 
-void login () {
-    char gui[TAILLE_LOGIN + 15];
-    char test_login[TAILLE_LOGIN];
-    char test_mdp[TAILLE_LOGIN];
-    int32_t i;
-    int8_t ok;
-
-    sti();
-
-    dessine_MLK();
-    
-    ok = 0;
-    
-    while(!ok){
-        prompt_login();
-
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        ligne = L_LOGIN + 1;
-        colonne = C_LOGIN + 17;
-        place_curseur(ligne, colonne);
-        lire_clavier(test_login, TAILLE_LOGIN, VISIBLE);
-
-        format = TEXTE_MAGENTA_C | FOND_BLEU;
-        ligne = L_LOGIN + 2;
-        colonne = C_LOGIN + 17;
-        place_curseur(ligne, colonne);
-        lire_clavier(test_mdp, TAILLE_LOGIN, CACHE);
-        
-        for(i = 0; i < nb_utilisateurs; i++){
-            if(!strncmp(utilisateurs[i][0], test_login, TAILLE_LOGIN)
-               && !strncmp(utilisateurs[i][1], test_mdp, TAILLE_LOGIN)){
-                ok = 1;
-                break;
-            }
-        }
-        
-        if(!ok){
-            dessine_MLK();
-            identifiants_incorrects();
-        }
-    }
-
-    strncpy(utilisateur, test_login, TAILLE_LOGIN);
-    
-    sprintf(gui, "UTILISATEUR : %-21s", test_login);
-    maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
-}
-
 void prompt_login () {
     uint32_t save_l;
     uint32_t save_c;
@@ -131,7 +83,7 @@ void prompt_login () {
     ligne = L_LOGIN;
     colonne = C_LOGIN;
     place_curseur(ligne, colonne);
-    printf("                                      \n");
+    printf("                                      ");
 
     ligne = L_LOGIN + 1;
     colonne = C_LOGIN;
