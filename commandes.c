@@ -214,7 +214,7 @@ void help () {
 
     format = TEXTE_BLEU_C | FOND_NOIR;
     printf(" Jeux (srand avant, c'est bien) :\n");
-    printf("  - tictactoe : jeu de tic-tac-toe contre l'IA (un srand avant, c'est mieux)\n");
+    printf("  - tictactoe : jeu de tic-tac-toe contre l'IA\n");
     printf("  - devine <entier> : jeu de devine le nombre entre 0 et <entier>\n");
     printf("  - rubiks : jeu de Rubik's Cube\n");
 
