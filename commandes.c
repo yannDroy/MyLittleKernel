@@ -7,7 +7,8 @@
 #include "aleatoire.h"
 #include "ecran.h"
 #include "clavier.h"
-#include "shell.h"
+#include "atoi.h"
+#include "malloc.h"
 #include "gui.h"
 #include "commandes.h"
 
@@ -86,6 +87,11 @@ void sleep (void *n) {
     dors((uint32_t) n);
 }
 
+void time () {
+    sti();
+    printf("Le systeme est allume depuis %d seconde(s)\n", nbr_secondes());
+}
+
 void su () {
     char gui[TAILLE_LOGIN + 15];
     char mdp[TAILLE_LOGIN];
@@ -98,8 +104,8 @@ void su () {
         lire_clavier(mdp, TAILLE_LOGIN, CACHE);
 
         for(i = 0; i < nb_utilisateurs; i++){
-            if(!strncmp(utilisateurs[i][0], "root", TAILLE_LOGIN)
-               && !strncmp(utilisateurs[i][1], mdp, TAILLE_LOGIN)){
+            if(!strcmp(utilisateurs[i][0], "root")
+               && !strcmp(utilisateurs[i][1], mdp)){
                 strcpy(ancien_utilisateur, utilisateur);
                 strncpy(utilisateur, "root\0", 5);
                 
@@ -196,6 +202,7 @@ void help () {
     printf("  - users : affiche la liste des utilisateurs du systeme\n");
     printf("  - jobs : affiche les processus en cours d'execution\n");
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
+    printf("  - time : donne le temps d'allumage du systeme\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
     printf("  - help : affiche cette aide\n");
 
@@ -206,8 +213,10 @@ void help () {
     printf("  - fact <entier> : calcule la factorielle de <entier>\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" Jeux :\n");
+    printf(" Jeux (srand avant, c'est bien) :\n");
     printf("  - tictactoe : jeu de tic-tac-toe contre l'IA (un srand avant, c'est mieux)\n");
+    printf("  - devine <entier> : jeu de devine le nombre entre 0 et <entier>\n");
+    printf("  - rubiks : jeu de Rubik's Cube\n");
 
     format = TEXTE_MARRON | FOND_NOIR;
     printf(" Divers :\n");
@@ -266,4 +275,56 @@ void jobs () {
     }
 
     printf(" '-----+--------------+---------------------+-----------'\n");
+}
+
+void devine (void *n) {
+    char *input;
+    int32_t nombre, choix;
+    int32_t coups;
+    int32_t i;
+
+    sti();
+
+    if((int32_t) n < 10){
+        printf("Le nombre doit etre superieur ou egal a 10\n");
+        return;
+    }else if((int32_t) n > 1000000){
+        printf("Le nombre doit etre inferieur a 1.000.000\n");
+        return;
+    }
+    
+    nombre = crand48() % ((int32_t) (n + 1));
+    choix = -1;
+    coups = 0;
+
+    while(1){
+        printf("\f\n  *** Devinez le nombre ***\n\n");
+        printf(" Devinez un nombre entre 0 et %d (inclus)\n\n", (int32_t) n);
+
+        if(choix != -1){
+            coups++;
+            
+            if(choix > nombre){
+                printf(" C'est moins que %d !\n", choix);
+            }else if(choix < nombre){
+                printf(" C'est plus que %d !\n", choix);
+            }else{
+                printf(" Bravo, vous avez trouve le nombre %d en %d coups !\n\n", nombre, coups);
+                break;
+            }
+            choix = -1;
+        }
+
+        input = (char*) malloc(8 * sizeof(char));
+        for(i = 0; i < 8; i++)
+            input[i] = '\0';
+
+        while(choix < 0 || choix > (int32_t) n){
+            printf("\n Faites une proposition : ");
+            lire_clavier(input, 8, VISIBLE);
+            choix = atoi(input);
+        }
+
+        free(input);
+    }
 }

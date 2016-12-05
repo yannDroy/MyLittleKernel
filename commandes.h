@@ -25,6 +25,9 @@ void beer (void *n) ;
 /* Dors n secondes */
 void sleep (void *n);
 
+/* Donne le temps d'allumage du systeme */
+void time ();
+
 /* Affiche la liste des utilisateurs */
 void users ();
 
@@ -42,5 +45,8 @@ void quitter ();
 
 /* Liste des processus */
 void jobs ();
+
+/* Jeu de devine le nombre (+ ou -) */
+void devine (void *n);
 
 #endif

@@ -4,6 +4,7 @@
 #include "ecran.h"
 #include "clavier.h"
 #include "ordonnancement.h"
+#include "malloc.h"
 #include "horloge.h"
 #include "gui.h"
 
@@ -163,4 +164,61 @@ void identifiants_incorrects () {
     colonne = save_c;
     format = save_format;
     place_curseur(ligne, colonne);
+}
+
+void login () {
+    char gui[TAILLE_LOGIN + 15];
+    char *test_login;
+    char *test_mdp;
+    int32_t i;
+    int8_t ok;
+
+    sti();
+
+    dessine_MLK();
+    
+    ok = 0;
+    
+    while(!ok){
+        prompt_login();
+
+        test_login = (char*) malloc(TAILLE_LOGIN * sizeof(char));
+        for(i = 0; i < TAILLE_LOGIN; i++)
+            test_login[i] = '\0';
+
+        test_mdp = (char*) malloc(TAILLE_LOGIN * sizeof(char));
+        for(i = 0; i < TAILLE_LOGIN; i++)
+            test_mdp[i] = '\0';
+
+        format = TEXTE_ROUGE_C | FOND_BLEU;
+        ligne = L_LOGIN + 1;
+        colonne = C_LOGIN + 17;
+        place_curseur(ligne, colonne);
+        lire_clavier(test_login, TAILLE_LOGIN, VISIBLE);
+
+        format = TEXTE_VERT_C | FOND_BLEU;
+        ligne = L_LOGIN + 2;
+        colonne = C_LOGIN + 17;
+        place_curseur(ligne, colonne);
+        lire_clavier(test_mdp, TAILLE_LOGIN, CACHE);
+        
+        for(i = 0; i < nb_utilisateurs; i++){
+            if(!strncmp(utilisateurs[i][0], test_login, TAILLE_LOGIN)
+               && !strncmp(utilisateurs[i][1], test_mdp, TAILLE_LOGIN)){
+                ok = 1;
+                
+                strncpy(utilisateur, test_login, TAILLE_LOGIN);
+                sprintf(gui, "UTILISATEUR : %-21s", test_login);
+                maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+                
+                break;
+            }
+        }
+        
+        if(!ok)
+            identifiants_incorrects();
+
+        free(test_login);
+        free(test_mdp);
+    }
 }

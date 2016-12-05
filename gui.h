@@ -31,9 +31,6 @@ void creer_barre ();
 /* Initie les affichages GUI */
 void init_affichage ();
 
-/* Processus de login */
-void login ();
-
 /* Champs d'identification */
 void prompt_login ();
 
@@ -42,5 +39,8 @@ void dessine_MLK ();
 
 /* Indique que les identifiants entrés sont incorrects */
 void identifiants_incorrects ();
+
+/* Processus de login */
+void login ();
 
 #endif

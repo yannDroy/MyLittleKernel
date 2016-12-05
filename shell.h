@@ -15,7 +15,4 @@ void decouper_commande (char* chaine, char **tokens);
 /* Execute une commande shell */
 void executer_commande (char **tokens);
 
-/* Conversion d'une chaine en nombre */
-int32_t atoi (char* c);
-
 #endif

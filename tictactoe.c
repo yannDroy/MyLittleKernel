@@ -2,7 +2,7 @@
 #include <inttypes.h>
 #include <cpu.h>
 #include "aleatoire.h"
-#include "shell.h"
+#include "atoi.h"
 #include "clavier.h"
 #include "tictactoe.h"
 

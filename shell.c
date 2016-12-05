@@ -4,14 +4,17 @@
 #include "ecran.h"
 #include "clavier.h"
 #include "horloge.h"
-#include "malloc.c.h"
+#include "malloc.h"
 #include "gui.h"
 #include "ordonnancement.h"
 #include "commandes.h"
+#include "atoi.h"
 #include "tictactoe.h"
+#include "rubiks.h"
 #include "shell.h"
 
-extern void tictactoe();
+extern void tictactoe ();
+extern void rubiks ();
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint32_t nombre_processus;
@@ -104,7 +107,7 @@ void executer_commande (char **tokens) {
     if(!strcmp(tokens[0], "exit")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&quitter, "exit\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
@@ -113,7 +116,16 @@ void executer_commande (char **tokens) {
     }else if(!strcmp(tokens[0], "tictactoe")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&tictactoe, "tictactoe\0", NULL);
-            if(pid > 0)
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "rubiks")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&rubiks, "rubiks\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
             printf("Pas d'argument attendu !\n");
@@ -122,6 +134,15 @@ void executer_commande (char **tokens) {
     }else if(!strcmp(tokens[0], "clear")) {
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&clear, "clear\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "time")) {
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&time, "time\0", NULL);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
@@ -186,6 +207,23 @@ void executer_commande (char **tokens) {
                     attendre_terminaison(pid);
             }else{
                 printf("Un seul (ou aucun) argument attendu : chaine !\n");
+            }
+        }
+
+    }else if(!strcmp(tokens[0], "devine")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&devine, "devine\0", (void*) 100);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                sprintf(nom, "devine %s", tokens[1]);
+                param_int = atoi(tokens[1]);
+                pid = creer_processus(&devine, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul (ou aucun) argument attendu : entier !\n");
             }
         }
 
@@ -281,84 +319,5 @@ void executer_commande (char **tokens) {
         
     }else if(strcmp(tokens[0], "")){
         printf("Commande inconnue '%s' !\n", tokens[0]);
-    }
-}
-
-int32_t atoi (char* c) {
-    int32_t valeur;
-    int32_t signe;
-
-    valeur = 0;
-    signe = 1;
-    
-    if(*c == '+' || *c == '-'){
-        if(*c == '-')
-            signe = -1;
-        c++;
-    }
-    
-    while(*c >= '0' && *c <= '9'){
-        valeur *= 10;
-        valeur += (int32_t) (*c - '0');
-        c++;
-    }
-
-    return valeur * signe;
-}
-
-void login () {
-    char gui[TAILLE_LOGIN + 15];
-    char *test_login;
-    char *test_mdp;
-    int32_t i;
-    int8_t ok;
-
-    sti();
-
-    dessine_MLK();
-    
-    ok = 0;
-    
-    while(!ok){
-        prompt_login();
-
-        test_login = (char*) malloc(TAILLE_LOGIN * sizeof(char));
-        for(i = 0; i < TAILLE_LOGIN; i++)
-            test_login[i] = '\0';
-
-        test_mdp = (char*) malloc(TAILLE_LOGIN * sizeof(char));
-        for(i = 0; i < TAILLE_LOGIN; i++)
-            test_mdp[i] = '\0';
-
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        ligne = L_LOGIN + 1;
-        colonne = C_LOGIN + 17;
-        place_curseur(ligne, colonne);
-        lire_clavier(test_login, TAILLE_LOGIN, VISIBLE);
-
-        format = TEXTE_VERT_C | FOND_BLEU;
-        ligne = L_LOGIN + 2;
-        colonne = C_LOGIN + 17;
-        place_curseur(ligne, colonne);
-        lire_clavier(test_mdp, TAILLE_LOGIN, CACHE);
-        
-        for(i = 0; i < nb_utilisateurs; i++){
-            if(!strncmp(utilisateurs[i][0], test_login, TAILLE_LOGIN)
-               && !strncmp(utilisateurs[i][1], test_mdp, TAILLE_LOGIN)){
-                ok = 1;
-                
-                strncpy(utilisateur, test_login, TAILLE_LOGIN);
-                sprintf(gui, "UTILISATEUR : %-21s", test_login);
-                maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
-                
-                break;
-            }
-        }
-        
-        if(!ok)
-            identifiants_incorrects();
-
-        free(test_login);
-        free(test_mdp);
     }
 }
