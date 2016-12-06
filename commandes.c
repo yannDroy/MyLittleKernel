@@ -194,12 +194,12 @@ void quitter (void* arret) {
         }else{
             printf("Bye.\n");
             *((int32_t*)arret) = 1;
-            dors(3);
+            dors(1);
         }
     }else{
         printf("Bye.\n");
         *((int32_t*)arret) = 1;
-        dors(3);
+        dors(1);
     }
 }
 
