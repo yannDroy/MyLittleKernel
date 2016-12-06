@@ -22,6 +22,9 @@
 #define L_IDENT_INCORR C_LOGIN
 #define C_IDENT_INCORR C_LOGIN
 
+/* Indique que la barre d'etat n'existe plus */
+void detruire_barre ();
+
 /* Met a jour la GUI */
 void maj_GUI (char *chaine, uint32_t col, uint8_t f);
 

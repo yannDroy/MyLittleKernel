@@ -13,12 +13,10 @@
 extern char utilisateur[TAILLE_LOGIN];
 
 void kernel_start () {
-    init_affichage();
     init_clock();
     init_clavier();
 
     srand(111);
-    printf("\f");
 
     strncpy(utilisateur, "root\0", 5);
 

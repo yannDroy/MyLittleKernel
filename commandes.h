@@ -1,6 +1,9 @@
 #ifndef __COMMANDES_H__
 #define __COMMANDES_H__
 
+/* Processus pour montrer des tests */
+void test (void *n);
+
 /* Nettoie l'ecran */
 void clear ();
 
@@ -41,7 +44,7 @@ void su ();
 void kill (void *n);
 
 /* Quitte le mode super utilisateur ou quitte le shell */
-void quitter ();
+void quitter (void* arret);
 
 /* Liste des processus */
 void jobs ();

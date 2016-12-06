@@ -13,6 +13,6 @@ void shell ();
 void decouper_commande (char* chaine, char **tokens);
 
 /* Execute une commande shell */
-void executer_commande (char **tokens);
+void executer_commande (char **tokens, int32_t *arret);
 
 #endif

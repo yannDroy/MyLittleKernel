@@ -13,9 +13,12 @@ extern void ctx_sw (int32_t *ancien_contexte, int32_t *nouveau_contexte);
 
 extern char utilisateur[TAILLE_LOGIN];
 
+extern int8_t barre_existe;
+
 Processus table_processus[TAILLE_TABLE_PROCESSUS];
 uint32_t nombre_processus;
 int32_t indice_actif;
+int32_t indice_dernier_attente;
 
 uint8_t mon_pid () {
     return table_processus[indice_actif].pid;
@@ -63,9 +66,12 @@ int32_t creer_processus (void (*code)(), char *nom, void *param) {
     if(nombre_processus == NB_MAX_PROCESSUS)
         return -1;
 
+    nouveau_pid = -1;
+
     for(i = 1; i < NB_MAX_PROCESSUS; i++){
         if(table_processus[i].pid < 0 || table_processus[i].etat == MORT){
             table_processus[i].pid = i;
+            table_processus[i].ppid = mon_pid();
             strcpy(table_processus[i].nom, nom);
 
             if(!strcmp(utilisateur, "root"))
@@ -103,34 +109,42 @@ void maj_nb_processus (int8_t p) {
     
     nombre_processus += p;
 
-    sprintf(chaine, "PROCESSUS : %3d", nombre_processus);
-    maj_GUI(chaine, C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
+    if(barre_existe){
+        sprintf(chaine, "PROCESSUS : %3d", nombre_processus);
+        maj_GUI(chaine, C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
+    }
 
     sti();
 }
 
 void fin_processus () {
+    cli();
+    
     if(table_processus[indice_actif].a_attendre)
         table_processus[indice_actif].etat = ATTENTE_TERM;
     else
-        table_processus[indice_actif].etat = MORT;
+        tuer_processus(indice_actif, 0);
 
-    maj_nb_processus(-1);
+    sti();
     
     ordonnance();
 }
 
-void tuer_processus (int32_t pid) {
-    cli();
+void tuer_processus (int32_t pid, int8_t rec) {
+    int32_t i;
+    
+    if(rec)
+        cli();
     
     if(pid != 0){
         if(table_processus[pid].etat != MORT){
-            if(pid != indice_actif){
-                table_processus[pid].etat = MORT;
-                maj_nb_processus(-1);
-            }else{
-                printf("Vous ne pouvez pas tuer un processus en cours d'execution\n");
+            for(i = 0; i < NB_MAX_PROCESSUS; i++){
+                if(table_processus[i].ppid == pid && table_processus[i].etat != MORT)
+                    tuer_processus(table_processus[i].pid, 0);
             }
+
+            table_processus[pid].etat = MORT;
+            maj_nb_processus(-1);
         }else{
             printf("Aucun processus a tuer\n");
         }
@@ -138,18 +152,20 @@ void tuer_processus (int32_t pid) {
         printf("Impossible de tuer le processus init\n");
     }
 
-    sti();
+    if(rec)
+        sti();
 }
 
 void attendre_terminaison (int32_t pid) {
     cli();
     
     table_processus[pid].a_attendre = 1;
+    indice_dernier_attente = pid;
     
     while(table_processus[pid].etat != ATTENTE_TERM)
         ordonnance();
 
-    table_processus[pid].etat = MORT;
+    tuer_processus(pid, 0);
 
     sti();
 }
@@ -163,6 +179,7 @@ int8_t init_table_processus () {
     
     for(i = 0; i < TAILLE_TABLE_PROCESSUS; i++){
         table_processus[i].pid = -1;
+        table_processus[i].ppid = -1;
         table_processus[i].etat = MORT;
         strncpy(table_processus[i].nom, "\0", 1);
         table_processus[i].heure_reveil = -1;
@@ -187,6 +204,7 @@ int32_t creer_processus_init () {
         return -1;
     }else{
         table_processus[0].pid = 0;
+        table_processus[0].ppid = -1;
         strncpy(table_processus[0].nom, "init\0", 4);
         table_processus[0].etat = ELU;
         table_processus[0].heure_reveil = -1;
@@ -196,7 +214,7 @@ int32_t creer_processus_init () {
         indice_actif = 0;
         
         nombre_processus = 1;
-        maj_GUI("PROCESSUS :   1", C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
+        //maj_GUI("PROCESSUS :   1", C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
 
         return 0;
     }

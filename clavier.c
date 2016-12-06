@@ -3,12 +3,16 @@
 #include <inttypes.h>
 #include <string.h>
 #include "clavier.h"
+#include "ordonnancement.h"
 #include "interruption.h"
 #include "shell.h"
 #include "ecran.h"
 
 extern uint32_t ligne;
 extern uint32_t colonne;
+
+extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
+extern int32_t indice_dernier_attente;
 
 char buffer[MAX_TAILLE_BUFFER];
 
@@ -281,10 +285,6 @@ void traiter_touche (int8_t c) {
         break;
     case KB_ENTER :
         if(input){
-            /*while(indice < MAX_TAILLE_BUFFER){
-                buffer[indice] = '\0';
-                indice++;
-                }*/
             rempli = 1;
             printf("\n");
         }else{
@@ -336,7 +336,18 @@ void traiter_touche (int8_t c) {
         mettre_caractere_buffer('b', 'B', 'B', 0);
         break;
     case KB_C :
-        mettre_caractere_buffer('c', 'C', 'C', 0);
+        if(ctrl){
+            if(strcmp(table_processus[indice_dernier_attente].nom, "init")
+               && strcmp(table_processus[indice_dernier_attente].nom, "shell")
+               && strcmp(table_processus[indice_dernier_attente].nom, "login")){
+                table_processus[indice_dernier_attente].etat = ATTENTE_TERM;
+                if(colonne > PREMIERE_COLONNE)
+                    printf("\n");
+                ordonnance();
+            }
+        }else{
+            mettre_caractere_buffer('c', 'C', 'C', 0);
+        }
         break;
     case KB_D :
         mettre_caractere_buffer('d', 'D', 'D', 0);
@@ -409,6 +420,7 @@ void traiter_touche (int8_t c) {
         break;
     case KB_LCTRL :
         ctrl = 1 - ctrl;
+        break;
     case KB_LCTRL - 128 :
         ctrl = 1 - ctrl;
         break;

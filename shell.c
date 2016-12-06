@@ -34,19 +34,18 @@ char utilisateurs[][2][TAILLE_LOGIN] = {
 char utilisateur[TAILLE_LOGIN];
 char ancien_utilisateur[TAILLE_LOGIN];
 
-int32_t arret;
-
 void shell () {
     char *commande = NULL;
     char **tokens = NULL;
     int32_t i, j;
+    int32_t arret;
     
     sti();
 
     strcpy(ancien_utilisateur, utilisateur);
 
     format = TEXTE_JAUNE | FOND_NOIR;
-    printf("\f\n  *** MyLittleKernel 0.1 ***\n\n");
+    printf("\n  *** MyLittleKernel 0.1 ***\n\n");
 
     format = TEXTE_GRIS | FOND_NOIR;
     printf("commande 'help' pour afficher l'aide\n");
@@ -74,7 +73,7 @@ void shell () {
         
         lire_clavier(commande, MAX_TAILLE_BUFFER, VISIBLE);
         decouper_commande(commande, tokens);
-        executer_commande(tokens);
+        executer_commande(tokens, &arret);
         
         for(i = 0; i < MAX_TOKEN; i++)
             free(tokens[i]);
@@ -99,14 +98,14 @@ void decouper_commande (char* chaine, char **tokens) {
     strcpy(tokens[i], "");
 }
 
-void executer_commande (char **tokens) {
+void executer_commande (char **tokens, int32_t *arret) {
     char nom[TAILLE_COMMANDE];
     int32_t pid;
     int32_t param_int;
     
     if(!strcmp(tokens[0], "exit")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
-            pid = creer_processus(&quitter, "exit\0", NULL);
+            pid = creer_processus(&quitter, "exit\0", (void*) arret);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
@@ -134,6 +133,15 @@ void executer_commande (char **tokens) {
     }else if(!strcmp(tokens[0], "clear")) {
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&clear, "clear\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "shell")) {
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&shell, "shell\0", NULL);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
@@ -227,19 +235,21 @@ void executer_commande (char **tokens) {
             }
         }
 
-    }else if(!strcmp(tokens[0], "beer")){
-        if(strcmp(tokens[1], "")){
+    }else if(!strcmp(tokens[0], "test")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&test, "test\0", (void*) 0);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
             if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                sprintf(nom, "test %s", tokens[1]);
                 param_int = atoi(tokens[1]);
-                sprintf(nom, "beer %d", param_int);
-                pid = creer_processus(&beer, nom, (void*) param_int);
+                pid = creer_processus(&test, nom, (void*) param_int);
                 if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{
-                printf("Un seul parametre attendu : entier !\n");
+                printf("Un seul (ou aucun) argument attendu : entier !\n");
             }
-        }else{
-            printf("Un entier attendu en parametre !\n");
         }
 
     }else if(!strcmp(tokens[0], "beer")){

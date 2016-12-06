@@ -25,6 +25,18 @@ extern uint8_t format;
 
 extern int32_t arret;
 
+void test (void *n) {
+    sti();
+
+    creer_processus(&sleep, "sleep_test 120", (void*) 120);
+    creer_processus(&sleep, "sleep_test 180", (void*) 180);
+    creer_processus(&infinity, "infinity_test", NULL);
+    if((int32_t) n)
+        creer_processus(&test, "test_dans_test", (void*) ((int32_t) n - 1));
+
+    while(1);
+}
+
 void clear () {
     sti();
     printf("\f");
@@ -159,18 +171,18 @@ void kill (void *n) {
     if(pid >= 0 && pid < NB_MAX_PROCESSUS){
         if(table_processus[pid].proprietaire == ROOT){
             if(!strcmp(utilisateur, "root"))
-                tuer_processus(pid);
+                tuer_processus(pid, 1);
             else
                 printf("Vous devez etre super utilisateur pour tuer ce processus\n");
         }else{
-            tuer_processus(pid);
+            tuer_processus(pid, 1);
         }
     }else{
         printf("Aucun processus a tuer\n");
     }
 }
 
-void quitter () {
+void quitter (void* arret) {
     char gui[TAILLE_LOGIN + 15];
     
     if(!strcmp(utilisateur, "root")){
@@ -181,11 +193,13 @@ void quitter () {
             maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
         }else{
             printf("Bye.\n");
-            arret = 1;
+            *((int32_t*)arret) = 1;
+            dors(3);
         }
     }else{
         printf("Bye.\n");
-        arret = 1;
+        *((int32_t*)arret) = 1;
+        dors(3);
     }
 }
 
@@ -196,33 +210,35 @@ void help () {
     printf("   *** Liste des commandes shell :\n");
 
     format = TEXTE_CYAN | FOND_NOIR;
-    printf(" Systeme :\n");
+    //printf(" Systeme :\n");
     printf("  - clear : nettoie l'ecran\n");
     printf("  - su : passe en mode super utilisateur\n");
     printf("  - users : affiche la liste des utilisateurs du systeme\n");
     printf("  - jobs : affiche les processus en cours d'execution\n");
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
     printf("  - time : donne le temps d'allumage du systeme\n");
+    printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
     printf("  - help : affiche cette aide\n");
 
     format = TEXTE_JAUNE | FOND_NOIR;
-    printf(" Mathematiques :\n");
+    //printf(" Mathematiques :\n");
     printf("  - srand <entier> : initialise la suite aleatoire\n");
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
     printf("  - fact <entier> : calcule la factorielle de <entier>\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
-    printf(" Jeux (srand avant, c'est bien) :\n");
+    //printf(" Jeux (srand avant, c'est bien) :\n");
     printf("  - tictactoe : jeu de tic-tac-toe contre l'IA\n");
     printf("  - devine [<entier>] : devinez le nombre entre 0 et <entier> (100 par defaut)\n");
     printf("  - rubiks : jeu de Rubik's Cube\n");
 
     format = TEXTE_MARRON | FOND_NOIR;
-    printf(" Divers :\n");
+    //printf(" Divers :\n");
     printf("  - hello [<chaine>] : dit bonjour\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire\n");
-    printf("  - infinity : processus de boucle infinie\n");
+    printf("  - test [<entier>]: cree des tests, recursivement selon <entier>\n");
+    printf("  - infinity : boucle infinie\n");
 }
 
 void jobs () {
@@ -231,9 +247,9 @@ void jobs () {
     sti();
 
     printf("   *** Liste des processus (%d) :\n", nombre_processus);
-    printf("  ______________________________________________________\n");
-    printf(" | PID | PROPRIETAIRE |         nom         |    etat   |\n");
-    printf(" |-----+--------------+---------------------+-----------|\n");
+    printf("  _____________________________________________________________\n");
+    printf(" | PID | PPID | PROPRIETAIRE |         nom         |    etat   |\n");
+    printf(" |-----+------+--------------+---------------------+-----------|\n");
     
     for(i = 0; i < NB_MAX_PROCESSUS; i++){
         if(table_processus[i].pid >= 0){
@@ -241,6 +257,15 @@ void jobs () {
                 printf(" |  %d  |", table_processus[i].pid);
             else if(table_processus[i].pid < 100)
                 printf(" |  %d |", table_processus[i].pid);
+            else
+                printf(" | %d |", table_processus[i].pid);
+
+            if(table_processus[i].ppid < 10 && table_processus[i].ppid >= 0)
+                printf("   %d  |", table_processus[i].ppid);
+            else if(table_processus[i].ppid < 100 || table_processus[i].ppid < 0)
+                printf("  %d  |", table_processus[i].ppid);
+            else
+                printf("  %d |", table_processus[i].ppid);
 
             if(table_processus[i].proprietaire == ROOT)
                 printf("     ROOT     |");
@@ -274,7 +299,7 @@ void jobs () {
         }
     }
 
-    printf(" '-----+--------------+---------------------+-----------'\n");
+    printf(" '-----+------+--------------+---------------------+-----------'\n");
 }
 
 void devine (void *n) {

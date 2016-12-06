@@ -16,6 +16,12 @@ extern uint32_t ligne;
 extern uint32_t colonne;
 extern uint8_t format;
 
+int8_t barre_existe = 0;
+
+void detruire_barre () {
+    barre_existe = 0;
+}
+
 void maj_GUI (char *chaine, uint32_t col, uint8_t f) {
     uint32_t save_l;
     uint32_t save_c;
@@ -43,6 +49,8 @@ void creer_barre () {
     int32_t i;
     uint8_t save_format;
 
+    barre_existe = 1;
+
     save_format = format;
     format = TEXTE_NOIR | FOND_GRIS;
     
@@ -53,6 +61,8 @@ void creer_barre () {
 }
 
 void init_affichage () {
+    char gui[TAILLE_LOGIN + 15];
+    
     ligne = PREMIERE_LIGNE;
     colonne = PREMIERE_COLONNE;
 
@@ -64,7 +74,9 @@ void init_affichage () {
     maj_GUI("PROCESSUS :   0", C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
     maj_GUI("|", C_PIPE2, TEXTE_NOIR | FOND_GRIS);
 
-    maj_GUI("UTILISATEUR : ---", C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+    sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
+    maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
+    //maj_GUI("UTILISATEUR : ---", C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
     
     maj_GUI("00:00:00", C_MAJ_CLOCK, TEXTE_ROUGE | FOND_GRIS);
     maj_GUI("|", C_PIPE3, TEXTE_NOIR | FOND_GRIS);
