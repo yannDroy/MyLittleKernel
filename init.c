@@ -4,6 +4,7 @@
 #include "ordonnancement.h"
 #include "horloge.h"
 #include "gui.h"
+#include "clavier.h"
 #include "interruption.h"
 #include "ecran.h"
 #include "shell.h"
@@ -30,6 +31,7 @@ void init () {
     detruire_barre();
     efface_ecran(0);
     masque_IRQ(CANAL_CLOCK, 1);
+    masque_IRQ(CANAL_CLAVIER, 1);
     
     for(;;){
         sti();
