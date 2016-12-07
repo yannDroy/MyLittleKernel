@@ -225,10 +225,10 @@ void help () {
     sti();
 
     format = TEXTE_BLANC | FOND_NOIR;
-    printf("   *** Liste des commandes shell :\n");
+    printf("   *** Liste des commandes shell :\n\n");
 
     format = TEXTE_CYAN | FOND_NOIR;
-    //printf(" Systeme :\n");
+    printf(" Systeme :\n");
     printf("  - clear : nettoie l'ecran\n");
     printf("  - su : passe en mode super utilisateur\n");
     printf("  - users : affiche la liste des utilisateurs du systeme\n");
@@ -239,22 +239,22 @@ void help () {
     printf("  - veille : lance l'ecran de veille\n");
     printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
-    printf("  - help : affiche cette aide\n");
+    printf("  - help : affiche cette aide\n\n");
 
     format = TEXTE_JAUNE | FOND_NOIR;
-    //printf(" Mathematiques :\n");
+    printf(" Mathematiques :\n");
     printf("  - srand <entier> : initialise la suite d'entiers aleatoire\n");
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
-    printf("  - fact <entier> : calcule la factorielle de <entier>\n");
+    printf("  - fact <entier> : calcule la factorielle de <entier>\n\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
-    //printf(" Jeux (srand avant, c'est bien) :\n");
+    printf(" Jeux (srand avant, c'est bien) :\n");
     printf("  - tictactoe : jeu de tic-tac-toe contre une IA\n");
     printf("  - devine [<entier>] : devinez un nombre entre 0 et <entier> (100 par defaut)\n");
-    printf("  - rubiks : jeu de Rubik's Cube\n");
+    printf("  - rubiks : jeu de Rubik's Cube\n\n");
 
     format = TEXTE_MARRON | FOND_NOIR;
-    //printf(" Divers :\n");
+    printf(" Divers :\n");
     printf("  - hello [<chaine>] : dit bonjour <chaine> ('world' par defaut)\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire...\n");
     printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");

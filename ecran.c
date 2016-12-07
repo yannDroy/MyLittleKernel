@@ -83,6 +83,11 @@ void traite_car (char c) {
         ligne++;
         colonne = PREMIERE_COLONNE;
 
+        if(ligne >= NB_LIGNES){
+            ligne = NB_LIGNES - 1;
+            defilement();
+        }
+
         place_curseur(ligne, colonne);
         break;
     case '\f' :

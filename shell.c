@@ -27,6 +27,7 @@ extern uint32_t colonne;
 extern uint8_t format;
 
 extern int8_t historique_actif;
+extern int8_t tabulation_active;
 
 int32_t nb_utilisateurs = 4;
 char utilisateurs[][2][TAILLE_LOGIN] = {
@@ -76,10 +77,12 @@ void shell () {
         prompt_shell();
 
         historique_actif = 1;
+        tabulation_active = 1;
         commande = lire_clavier(MAX_TAILLE_BUFFER, VISIBLE);
         if(strcmp(commande, ""))
             ajouter_historique(commande);
         historique_actif = 0;
+        tabulation_active = 0;
         
         decouper_commande(commande, tokens);
         executer_commande(tokens, &arret);

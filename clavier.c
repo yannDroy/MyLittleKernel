@@ -5,6 +5,7 @@
 #include "clavier.h"
 #include "malloc.h"
 #include "gui.h"
+#include "tabulation.h"
 #include "historique.h"
 #include "scroll.h"
 #include "ordonnancement.h"
@@ -262,6 +263,7 @@ void traiter_touche (int8_t c) {
     case KB_CARRE :            
         break;
     case KB_TAB :
+        tabuler();
         break;
     case KB_CAPSLOCK :
         caps = 1 - caps;
