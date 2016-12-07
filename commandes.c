@@ -225,6 +225,7 @@ void help () {
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
     printf("  - time : donne le temps d'allumage du systeme\n");
     printf("  - set_veille : change le delai avant l'ecran de veille (30s par defaut)\n");
+    printf("  - veille : lance l'ecran de veille\n");
     printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
     printf("  - help : affiche cette aide\n");
@@ -238,7 +239,7 @@ void help () {
     format = TEXTE_BLEU_C | FOND_NOIR;
     //printf(" Jeux (srand avant, c'est bien) :\n");
     printf("  - tictactoe : jeu de tic-tac-toe contre l'IA\n");
-    printf("  - devine [<entier>] : devinez le nombre entre 0 et <entier> (100 par defaut)\n");
+    printf("  - devine [<entier>] : devinez un nombre entre 0 et <entier> (100 par defaut)\n");
     printf("  - rubiks : jeu de Rubik's Cube\n");
 
     format = TEXTE_MARRON | FOND_NOIR;
@@ -246,7 +247,6 @@ void help () {
     printf("  - hello [<chaine>] : dit bonjour\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire\n");
     printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");
-    printf("  - veille : lance l'ecran de veille\n");
     printf("  - infinity : boucle infinie\n");
 }
 
