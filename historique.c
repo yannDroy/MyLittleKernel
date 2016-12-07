@@ -37,56 +37,38 @@ void ajouter_historique (char* s) {
     }
 }
 
-void copier_dans_buffer (int8_t sens) {
-    int32_t i;
-    
+void charger_dans_buffer (int8_t sens) {
     if(sens < 0){
         if(a_copier > 0){
             a_copier--;
-            
-            vider_buffer();
-            prompt_shell();
-            strcpy(buffer, historique[a_copier]);
-            indice = strlen(historique[a_copier]);
-        
-            printf("%s", buffer);
-
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
-                printf(" ");
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
-                printf("\b");
+            copier(historique[a_copier]);
         }
     }else{
         if(a_copier < prochain - 1){
             a_copier++;
-            
-            vider_buffer();
-            prompt_shell();
-            strcpy(buffer, historique[a_copier]);
-            indice = strlen(historique[a_copier]);
-        
-            printf("%s", buffer);
-
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
-                printf(" ");
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
-                printf("\b");
+            copier(historique[a_copier]);
         }else if(a_copier < prochain){
             a_copier++;
-
-            vider_buffer();
-            prompt_shell();
-
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN; i++)
-                printf(" ");
-            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN; i++)
-                printf("\b");
+            copier("");
         }
     }
 }
 
+void copier (char *s) {
+    int32_t i;
+    
+    vider_buffer();
+    
+    printf("\r");
+    prompt_shell();
+    
+    strcpy(buffer, s);
+    indice = strlen(s);
+        
+    printf("%s", buffer);
 
-
-
-
-
+    for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+        printf(" ");
+    for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+        printf("\b");
+}

@@ -471,10 +471,10 @@ void traiter_touche (int8_t c) {
     case KB_RCLICK :
         break;
     case KB_UP :
-        copier_dans_buffer(-1);
+        charger_dans_buffer(-1);
         break;
     case KB_DOWN :
-        copier_dans_buffer(1);
+        charger_dans_buffer(1);
         break;
     case KB_LEFT :
         if(indice > 0){

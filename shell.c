@@ -74,7 +74,8 @@ void shell () {
         prompt_shell();
         
         commande = lire_clavier(MAX_TAILLE_BUFFER, VISIBLE);
-        ajouter_historique(commande);
+        if(strcmp(commande, ""))
+            ajouter_historique(commande);
         
         decouper_commande(commande, tokens);
         executer_commande(tokens, &arret);
@@ -95,11 +96,15 @@ void decouper_commande (char* chaine, char **tokens) {
         if(strcmp(token, "")){
             strncpy(tokens[i], token, TAILLE_COMMANDE);
             i++;
+
+            if(i == MAX_TOKEN)
+                break;
         }
         chaine = NULL;
     }
 
-    strcpy(tokens[i], "");
+    if(i < MAX_TOKEN)
+        strcpy(tokens[i], "");
 }
 
 void executer_commande (char **tokens, int32_t *arret) {
