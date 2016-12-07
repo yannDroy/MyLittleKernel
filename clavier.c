@@ -6,6 +6,7 @@
 #include "malloc.h"
 #include "gui.h"
 #include "historique.h"
+#include "scroll.h"
 #include "ordonnancement.h"
 #include "interruption.h"
 #include "shell.h"
@@ -106,6 +107,8 @@ void mettre_caractere_buffer (char nr, char sh, char ca, char al) {
     char save_2;
     int32_t save_i;
 
+    tout_scroller_bas();
+
     a_mettre = 0;
 
     if(shift && sh)
@@ -194,6 +197,8 @@ void traiter_touche (int8_t c) {
         inser = 1 - inser;
         break;
     case KB_SUPPR :
+        tout_scroller_bas();
+        
         indice++;
         save_i = indice;
         save = buffer[indice];
@@ -218,12 +223,16 @@ void traiter_touche (int8_t c) {
         }
         break;
     case KB_DEBUT :
+        tout_scroller_bas();
+        
         while(indice > 0){
             indice--;
             printf("\b");
         }
         break;
     case KB_FIN :
+        tout_scroller_bas();
+        
         while(buffer[indice] != '\0'){
             indice++;
             colonne++;
@@ -239,8 +248,16 @@ void traiter_touche (int8_t c) {
         }
         break;
     case KB_DEBUT_P :
+        if(!shift)
+            scroll_haut();
+        else
+            tout_scroller_haut();
         break;
     case KB_FIN_P :
+        if(!shift)
+            scroll_bas();
+        else
+            tout_scroller_bas();
         break;
     case KB_CARRE :            
         break;
@@ -289,6 +306,8 @@ void traiter_touche (int8_t c) {
         mettre_caractere_buffer('!', 0, '!', 0);
         break;
     case KB_BACKSPACE :
+        tout_scroller_bas();
+        
         if(indice > 0){
             save_i = indice;
             save = buffer[indice];
@@ -315,6 +334,8 @@ void traiter_touche (int8_t c) {
         }
         break;
     case KB_ENTER :
+        tout_scroller_bas();
+        
         if(input){
             rempli = 1;
             printf("\n");
@@ -471,18 +492,24 @@ void traiter_touche (int8_t c) {
     case KB_RCLICK :
         break;
     case KB_UP :
+        tout_scroller_bas();
         charger_dans_buffer(-1);
         break;
     case KB_DOWN :
+        tout_scroller_bas();
         charger_dans_buffer(1);
         break;
     case KB_LEFT :
+        tout_scroller_bas();
+        
         if(indice > 0){
             indice--;
             printf("\b");
         }
         break;
     case KB_RIGHT :
+        tout_scroller_bas();
+        
         if(buffer[indice] != '\0'){
             indice++;
             colonne++;

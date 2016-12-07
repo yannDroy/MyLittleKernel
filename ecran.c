@@ -1,6 +1,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <cpu.h>
+#include "scroll.h"
 #include "ecran.h"
 
 uint32_t ligne = PREMIERE_LIGNE;
@@ -119,6 +120,8 @@ void traite_car (char c) {
 void defilement () {
     int32_t i;
     uint8_t save_format;
+
+    sauvegarde_premiere_ligne();
     
     memmove(ptr_mem(PREMIERE_LIGNE, PREMIERE_COLONNE), ptr_mem(PREMIERE_LIGNE + 1, PREMIERE_COLONNE), (NB_COLONNES * (NB_LIGNES - 1) * sizeof(uint16_t)));
 

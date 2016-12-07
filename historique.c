@@ -17,23 +17,23 @@ extern int32_t indice;
 extern char utilisateur[TAILLE_LOGIN];
 
 char historique[TAILLE_HISTORIQUE][MAX_TAILLE_BUFFER];
-
 int32_t prochain = 0;
 int32_t a_copier = 0;
 
 void ajouter_historique (char* s) {
     int32_t i;
-    
-    if(prochain == TAILLE_HISTORIQUE){
-        for(i = 1; i < TAILLE_HISTORIQUE; i++)
-            strcpy(historique[i - 1], historique[i]);
+
+    if(strcmp(s, "")){
+        if(prochain == TAILLE_HISTORIQUE){
+            for(i = 1; i < TAILLE_HISTORIQUE; i++)
+                strcpy(historique[i - 1], historique[i]);
         
-        strcpy(historique[prochain - 1], s);
-        a_copier = prochain;
-    }else{
-        strcpy(historique[prochain], s);
-        prochain++;
-        a_copier = prochain;
+            strcpy(historique[prochain - 1], s);
+        }else{
+            strcpy(historique[prochain], s);
+            prochain++;
+            a_copier = prochain;
+        }
     }
 }
 
