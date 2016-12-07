@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 
-#define NB_LIGNES_SAUVEGARDE 100
+#define NB_LIGNES_SAUVEGARDE 1024
 
 /* Sauvegarde la 1ere ligne de l'ecran */
 void sauvegarde_premiere_ligne ();
@@ -29,5 +29,7 @@ void tout_scroller_haut ();
 /* Scrolle tout vers le bas */
 void tout_scroller_bas ();
 
+/* Sauvegarde une ligne d'indice i */
+void sauvegarde_ligne (uint32_t i);
 
 #endif

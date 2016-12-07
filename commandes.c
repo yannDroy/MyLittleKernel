@@ -21,6 +21,8 @@ extern char utilisateurs[][2][TAILLE_LOGIN];
 extern char utilisateur[TAILLE_LOGIN];
 extern char ancien_utilisateur[TAILLE_LOGIN];
 
+extern int8_t sauvegarde_active;
+
 extern uint8_t format;
 
 extern int32_t temps_veille_sec;
@@ -41,7 +43,10 @@ void test (void *n) {
 
 void clear () {
     sti();
+    
+    sauvegarde_active = 1;
     printf("\f");
+    sauvegarde_active = 0;
 }
 
 void hello (char *s) {
@@ -321,9 +326,12 @@ void devine (void *n) {
     char *input;
     int32_t nombre, choix;
     int32_t coups;
-    //int32_t i;
 
     sti();
+
+    sauvegarde_active = 1;
+    printf("\f");
+    sauvegarde_active = 0;
 
     if((int32_t) n < 10){
         printf("Le nombre doit etre superieur ou egal a 10\n");

@@ -4,6 +4,8 @@
 #include "scroll.h"
 #include "ecran.h"
 
+extern int8_t sauvegarde_active;
+
 uint32_t ligne = PREMIERE_LIGNE;
 uint32_t colonne = PREMIERE_COLONNE;
 
@@ -28,7 +30,10 @@ void efface_ecran (uint32_t depart) {
     format = TEXTE_NOIR | FOND_NOIR;
 
     for(i = depart; i < NB_LIGNES; i++){
-        for(j = 0; j < NB_COLONNES; j++) {
+        if(sauvegarde_active)
+            sauvegarde_ligne(i);
+        
+        for(j = 0; j < NB_COLONNES; j++){
             ecrit_car(i, j, ' ');
         }
     }

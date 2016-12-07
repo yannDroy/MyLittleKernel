@@ -1,7 +1,7 @@
 #ifndef __HISTORIQUE_H__
 #define __HISTORIQUE_H__
 
-#define TAILLE_HISTORIQUE 10
+#define TAILLE_HISTORIQUE 512
 
 /* Ajoute une commande a l'historique */
 void ajouter_historique (char* s);

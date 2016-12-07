@@ -7,6 +7,8 @@
 #include "malloc.h"
 #include "tictactoe.h"
 
+extern int8_t sauvegarde_active;
+
 char plateau[3][3];
 position positions_libres[9];
 
@@ -141,6 +143,10 @@ void tictactoe () {
     sti();
 
     initialiser_tab();
+
+    sauvegarde_active = 1;
+    printf("\f");
+    sauvegarde_active = 0;
     
     while(1){
         printf("\f\n  *** Tic Tac Toe ***\n\n");

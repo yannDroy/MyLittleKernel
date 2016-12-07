@@ -10,6 +10,7 @@
 #include "rubiks.h"
 
 extern int8_t format;
+extern int8_t sauvegarde_active;
 
 char cube[6][9];
 
@@ -358,8 +359,10 @@ void rubiks () {
 
     init_cube();
 
+    sauvegarde_active = 1;
     printf("\f\n  *** Rubik's Cube ***\n\n");
     printf(" Nombre de mouvements pour le melange ? ");
+    sauvegarde_active = 0;
 
     input = (char*) malloc(4 * sizeof(char));
     for(nb = 0; nb < 4; nb++)
