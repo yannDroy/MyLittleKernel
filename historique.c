@@ -24,11 +24,11 @@ int32_t a_copier = 0;
 void ajouter_historique (char* s) {
     int32_t i;
     
-    if(prochain == TAILLE_HISTORIQUE - 1){
+    if(prochain == TAILLE_HISTORIQUE){
         for(i = 1; i < TAILLE_HISTORIQUE; i++)
-            strcpy(historique[prochain - 1], historique[prochain]);
+            strcpy(historique[i - 1], historique[i]);
         
-        strcpy(historique[prochain], s);
+        strcpy(historique[prochain - 1], s);
         a_copier = prochain;
     }else{
         strcpy(historique[prochain], s);
