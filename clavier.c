@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include "clavier.h"
+#include "malloc.h"
 #include "gui.h"
 #include "ordonnancement.h"
 #include "interruption.h"
@@ -52,14 +53,19 @@ void clavier_PIT () {
 
 void lire_clavier (char* tmp, int32_t taille, int8_t mode) {
     int32_t pid;
+    //int32_t i;
     
     vider_buffer();
     input = 1;
     rempli = 0;
     visible = mode;
+
+    /*tmp = (char*) malloc(taille * sizeof(char));
+    for(i = 0; i < taille; i++)
+    tmp[i] = '\0';*/
     
     while(!rempli && buffer[taille - 2] == '\0'){
-        if(temps_non_actif >= temps_veille_sec){
+        if(temps_veille_sec > 0 && temps_non_actif >= temps_veille_sec){
             pid = creer_processus(&ecran_veille, "veille\0", NULL);
             if(pid > 0)
                 attendre_terminaison(pid);

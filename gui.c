@@ -187,6 +187,14 @@ void identifiants_incorrects () {
     place_curseur(ligne, colonne);
 }
 
+void etoile_champ (int32_t i, char c) {
+    ligne = L_LOGIN + i;
+    colonne = C_LOGIN + 1;
+    place_curseur(ligne, colonne);
+    format = TEXTE_ROUGE_C | FOND_BLEU;
+    printf("%c", c);
+}
+
 void login () {
     char gui[TAILLE_LOGIN + 15];
     char *test_login;
@@ -211,11 +219,7 @@ void login () {
         for(i = 0; i < TAILLE_LOGIN; i++)
             test_mdp[i] = '\0';
 
-        ligne = L_LOGIN + 1;
-        colonne = C_LOGIN + 1;
-        place_curseur(ligne, colonne);
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        printf("*");
+        etoile_champ(1, '*');
         
         ligne = L_LOGIN + 1;
         colonne = C_LOGIN + 18;
@@ -223,16 +227,8 @@ void login () {
         format = TEXTE_MAGENTA_C | FOND_BLEU;
         lire_clavier(test_login, TAILLE_LOGIN, VISIBLE);
 
-        ligne = L_LOGIN + 1;
-        colonne = C_LOGIN + 1;
-        place_curseur(ligne, colonne);
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        printf(" ");
-        ligne = L_LOGIN + 2;
-        colonne = C_LOGIN + 1;
-        place_curseur(ligne, colonne);
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        printf("*");
+        etoile_champ(1, ' ');
+        etoile_champ(2, '*');
 
         ligne = L_LOGIN + 2;
         colonne = C_LOGIN + 18;
@@ -240,11 +236,7 @@ void login () {
         format = TEXTE_VERT_C | FOND_BLEU;
         lire_clavier(test_mdp, TAILLE_LOGIN, CACHE);
 
-        ligne = L_LOGIN + 2;
-        colonne = C_LOGIN + 1;
-        place_curseur(ligne, colonne);
-        format = TEXTE_ROUGE_C | FOND_BLEU;
-        printf(" ");
+        etoile_champ(2, ' ');
         
         for(i = 0; i < nb_utilisateurs; i++){
             if(!strncmp(utilisateurs[i][0], test_login, TAILLE_LOGIN)
@@ -265,6 +257,17 @@ void login () {
         free(test_login);
         free(test_mdp);
     }
+}
+
+void choisir_theme (int32_t n) {
+    if(!(n % 4))
+        format = TEXTE_MAGENTA_C | FOND_NOIR;
+    else if(n % 4 == 1)
+        format = TEXTE_JAUNE | FOND_NOIR;
+    else if(n % 4 == 2)
+        format = TEXTE_CYAN_C | FOND_NOIR;
+    else
+        format = TEXTE_BLANC | FOND_NOIR;
 }
 
 void ecran_veille () {
@@ -303,30 +306,17 @@ void ecran_veille () {
     touch = crand48() % 4;
 
     while(veille){
+        choisir_theme(touch);
         ligne = depart_l;
         colonne = depart_c;
         place_curseur(depart_l, depart_c);
-        if(!(touch % 4))
-            format = TEXTE_MAGENTA_C | FOND_NOIR;
-        else if(touch % 4 == 1)
-            format = TEXTE_JAUNE | FOND_NOIR;
-        else if(touch % 4 == 2)
-            format = TEXTE_CYAN_C | FOND_NOIR;
-        else
-            format = TEXTE_BLANC | FOND_NOIR;
         printf("        :::   :::   :::        :::    :::");
         ligne = depart_l + 1;
         colonne = depart_c;
         place_curseur(depart_l + 1, depart_c);
         printf("      :+:+: :+:+:  :+:        :+:   :+:");
-        if(!(touch % 4))
-            format = TEXTE_BLEU_C | FOND_NOIR;
-        else if(touch % 4 == 1)
-            format = TEXTE_MARRON | FOND_NOIR;
-        else if(touch % 4 == 2)
-            format = TEXTE_CYAN | FOND_NOIR;
-        else
-            format = TEXTE_GRIS | FOND_NOIR;
+        
+        choisir_theme(touch);
         ligne = depart_l + 2;
         colonne = depart_c;
         place_curseur(depart_l + 2, depart_c);
@@ -335,14 +325,8 @@ void ecran_veille () {
         colonne = depart_c;
         place_curseur(depart_l + 3, depart_c);
         printf("   +#+  +:+  +#+ +#+        +#++:++");
-        if(!(touch % 4))
-            format = TEXTE_BLEU | FOND_NOIR;
-        else if(touch % 4 == 1)
-            format = TEXTE_ROUGE | FOND_NOIR;
-        else if(touch % 4 == 2)
-            format = TEXTE_VERT | FOND_NOIR;
-        else
-            format = TEXTE_GRIS_F | FOND_NOIR;
+        
+        choisir_theme(touch);
         ligne = depart_l + 4;
         colonne = depart_c;
         place_curseur(depart_l + 4, depart_c);

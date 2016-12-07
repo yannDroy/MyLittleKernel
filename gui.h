@@ -43,8 +43,14 @@ void dessine_MLK ();
 /* Indique que les identifiants entrés sont incorrects */
 void identifiants_incorrects ();
 
+/* Caractere devant le champ a remplir */
+void etoile_champ (int32_t i, char c);
+
 /* Processus de login */
 void login ();
+
+/* Choisit la couleur pour l'ecran de veille */
+void choisir_theme (int32_t n);
 
 /* Ecran de veille */
 void ecran_veille ();

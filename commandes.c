@@ -74,7 +74,11 @@ void init_rand (void *n) {
 
 void set_veille (void *n) {
     sti();
-    temps_veille_sec = (int32_t) n;
+
+    if((int32_t) n < 5 && (int32_t) n != -1)
+        printf("Le delai doit etre d'au moins 5 secondes ou -1 pour une desactivation\n");
+    else
+        temps_veille_sec = (int32_t) n;
 }
 
 void infinity () {
@@ -224,7 +228,7 @@ void help () {
     printf("  - jobs : affiche les processus en cours d'execution\n");
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
     printf("  - time : donne le temps d'allumage du systeme\n");
-    printf("  - set_veille : change le delai avant l'ecran de veille (30s par defaut)\n");
+    printf("  - set_veille <entier> : change le delai avant la veille (-1 desactive)\n");
     printf("  - veille : lance l'ecran de veille\n");
     printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
@@ -232,20 +236,20 @@ void help () {
 
     format = TEXTE_JAUNE | FOND_NOIR;
     //printf(" Mathematiques :\n");
-    printf("  - srand <entier> : initialise la suite aleatoire\n");
+    printf("  - srand <entier> : initialise la suite d'entiers aleatoire\n");
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
     printf("  - fact <entier> : calcule la factorielle de <entier>\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
     //printf(" Jeux (srand avant, c'est bien) :\n");
-    printf("  - tictactoe : jeu de tic-tac-toe contre l'IA\n");
+    printf("  - tictactoe : jeu de tic-tac-toe contre une IA\n");
     printf("  - devine [<entier>] : devinez un nombre entre 0 et <entier> (100 par defaut)\n");
     printf("  - rubiks : jeu de Rubik's Cube\n");
 
     format = TEXTE_MARRON | FOND_NOIR;
     //printf(" Divers :\n");
-    printf("  - hello [<chaine>] : dit bonjour\n");
-    printf("  - beer <entier> : il reste <entier> biere(s) a boire\n");
+    printf("  - hello [<chaine>] : dit bonjour <chaine> ('world' par defaut)\n");
+    printf("  - beer <entier> : il reste <entier> biere(s) a boire...\n");
     printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");
     printf("  - infinity : boucle infinie\n");
 }
