@@ -6,6 +6,7 @@
 #include "horloge.h"
 #include "malloc.h"
 #include "gui.h"
+#include "historique.h"
 #include "ordonnancement.h"
 #include "commandes.h"
 #include "atoi.h"
@@ -35,6 +36,16 @@ char utilisateurs[][2][TAILLE_LOGIN] = {
 char utilisateur[TAILLE_LOGIN];
 char ancien_utilisateur[TAILLE_LOGIN];
 
+void prompt_shell () {
+    if(strcmp(utilisateur, "root"))
+        format = TEXTE_VERT_C | FOND_NOIR;
+    else
+        format = TEXTE_ROUGE_C | FOND_NOIR;
+    printf("%s@MLK_$> ", utilisateur);
+        
+    format = TEXTE_BLANC | FOND_NOIR;
+}
+
 void shell () {
     char *commande = NULL;
     char **tokens = NULL;
@@ -52,11 +63,7 @@ void shell () {
     printf("commande 'help' pour afficher l'aide\n");
 
     arret = 0;
-    do{ 
-        commande = (char*) malloc(MAX_TAILLE_BUFFER * sizeof(char));
-        for(i = 0; i < MAX_TAILLE_BUFFER; i++)
-            commande[i] = '\0';
-
+    do{
         tokens = (char**) malloc(MAX_TOKEN * sizeof(char*));
         for(i = 0; i < MAX_TOKEN; i++){
             tokens[i] = (char*) malloc(TAILLE_COMMANDE * sizeof(char));
@@ -64,15 +71,11 @@ void shell () {
                 tokens[i][j] = '\0';
         }
 
-        if(strcmp(utilisateur, "root"))
-            format = TEXTE_VERT_C | FOND_NOIR;
-        else
-            format = TEXTE_ROUGE_C | FOND_NOIR;
-        printf("%s@MLK_$> ", utilisateur);
+        prompt_shell();
         
-        format = TEXTE_BLANC | FOND_NOIR;
+        commande = lire_clavier(MAX_TAILLE_BUFFER, VISIBLE);
+        ajouter_historique(commande);
         
-        lire_clavier(commande, MAX_TAILLE_BUFFER, VISIBLE);
         decouper_commande(commande, tokens);
         executer_commande(tokens, &arret);
         
@@ -90,7 +93,7 @@ void decouper_commande (char* chaine, char **tokens) {
     i = 0;
     while((token = strtok(chaine, " ")) != NULL){
         if(strcmp(token, "")){
-            strncpy(tokens[i], token, strlen(token));
+            strncpy(tokens[i], token, TAILLE_COMMANDE);
             i++;
         }
         chaine = NULL;

@@ -5,6 +5,7 @@
 #include "clavier.h"
 #include "malloc.h"
 #include "gui.h"
+#include "historique.h"
 #include "ordonnancement.h"
 #include "interruption.h"
 #include "shell.h"
@@ -51,18 +52,19 @@ void clavier_PIT () {
     sti();
 }
 
-void lire_clavier (char* tmp, int32_t taille, int8_t mode) {
+char *lire_clavier (int32_t taille, int8_t mode) {
+    char *tmp;
     int32_t pid;
-    //int32_t i;
+    int32_t i;
     
     vider_buffer();
     input = 1;
     rempli = 0;
     visible = mode;
 
-    /*tmp = (char*) malloc(taille * sizeof(char));
+    tmp = (char*) malloc(taille * sizeof(char));
     for(i = 0; i < taille; i++)
-    tmp[i] = '\0';*/
+        tmp[i] = '\0';
     
     while(!rempli && buffer[taille - 2] == '\0'){
         if(temps_veille_sec > 0 && temps_non_actif >= temps_veille_sec){
@@ -77,6 +79,8 @@ void lire_clavier (char* tmp, int32_t taille, int8_t mode) {
     visible = 1;
 
     strncpy(tmp, buffer, strlen(buffer));
+
+    return tmp;
 }
 
 void init_clavier () {
@@ -467,8 +471,10 @@ void traiter_touche (int8_t c) {
     case KB_RCLICK :
         break;
     case KB_UP :
+        copier_dans_buffer(-1);
         break;
     case KB_DOWN :
+        copier_dans_buffer(1);
         break;
     case KB_LEFT :
         if(indice > 0){

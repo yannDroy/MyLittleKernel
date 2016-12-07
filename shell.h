@@ -3,8 +3,11 @@
 
 #include <inttypes.h>
 
-#define TAILLE_COMMANDE 64
-#define MAX_TOKEN 10
+#define TAILLE_COMMANDE 16
+#define MAX_TOKEN 3
+
+/* Prompt de l'invite de commandes */
+void prompt_shell ();
 
 /* Processus shell */
 void shell ();

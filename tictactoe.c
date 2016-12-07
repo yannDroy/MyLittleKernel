@@ -4,6 +4,7 @@
 #include "aleatoire.h"
 #include "atoi.h"
 #include "clavier.h"
+#include "malloc.h"
 #include "tictactoe.h"
 
 char plateau[3][3];
@@ -134,7 +135,7 @@ int32_t est_finie () {
 }
 
 void tictactoe () {
-    char input[3];
+    char *input;
     int32_t choixX, choixY;
 
     sti();
@@ -151,17 +152,15 @@ void tictactoe () {
         
         while(!est_valide(choixX,choixY)){
             printf("\n Entrez une position :\n  X : ");
-            lire_clavier(input, 3, VISIBLE);
+            input = lire_clavier(3, VISIBLE);
             choixX = atoi(input);
+            free(input);
             
             printf("  Y : ");
-            lire_clavier(input, 3, VISIBLE);
+            input = lire_clavier(3, VISIBLE);
             printf("\n");
             choixY = atoi(input);
-
-            input[0] = '\0';
-            input[1] = '\0';
-            input[2] = '\0';
+            free(input);
         }
 
         plateau[choixX][choixY] = 'X';

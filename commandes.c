@@ -117,14 +117,14 @@ void time () {
 
 void su () {
     char gui[TAILLE_LOGIN + 15];
-    char mdp[TAILLE_LOGIN];
+    char *mdp;
     int32_t i;
 
     sti();
     
     if(strcmp(utilisateur, "root")){
         printf("Mot de passe : ");
-        lire_clavier(mdp, TAILLE_LOGIN, CACHE);
+        mdp = lire_clavier(TAILLE_LOGIN, CACHE);
 
         for(i = 0; i < nb_utilisateurs; i++){
             if(!strcmp(utilisateurs[i][0], "root")
@@ -135,6 +135,8 @@ void su () {
                 sprintf(gui, "UTILISATEUR : %-21s", utilisateur);
                 maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
 
+                free(mdp);
+                
                 return;
             }
         }
@@ -319,7 +321,7 @@ void devine (void *n) {
     char *input;
     int32_t nombre, choix;
     int32_t coups;
-    int32_t i;
+    //int32_t i;
 
     sti();
 
@@ -353,13 +355,9 @@ void devine (void *n) {
             choix = -1;
         }
 
-        input = (char*) malloc(8 * sizeof(char));
-        for(i = 0; i < 8; i++)
-            input[i] = '\0';
-
         while(choix < 0 || choix > (int32_t) n){
             printf("\n Faites une proposition : ");
-            lire_clavier(input, 8, VISIBLE);
+            input = lire_clavier(8, VISIBLE);
             choix = atoi(input);
         }
 

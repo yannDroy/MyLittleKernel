@@ -365,7 +365,7 @@ void rubiks () {
     for(nb = 0; nb < 4; nb++)
         input[nb] = '\0';
 
-    lire_clavier(input, 4, VISIBLE);
+    input = lire_clavier(4, VISIBLE);
     n_scramble = atoi(input);
 
     coups = 0;
@@ -384,12 +384,8 @@ void rubiks () {
             printf(" Bravo, cube resolu en %d coup(s) et %d seconde(s) !\n\n", coups, nbr_secondes() - temps);
             break;
         }else{
-            input = (char*) malloc(4 * sizeof(char));
-            for(nb = 0; nb < 4; nb++)
-                input[nb] = '\0';
-            
             printf(" Mouvement ? ");
-            lire_clavier(input, 4, VISIBLE);
+            input = lire_clavier(4, VISIBLE);
 
             switch(input[1]){
             case '-':

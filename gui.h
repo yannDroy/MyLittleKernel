@@ -50,7 +50,7 @@ void etoile_champ (int32_t i, char c);
 void login ();
 
 /* Choisit la couleur pour l'ecran de veille */
-void choisir_theme (int32_t n);
+void choisir_theme (int32_t n, int8_t i);
 
 /* Ecran de veille */
 void ecran_veille ();

@@ -20,7 +20,7 @@ extern void traitant_IT_33 ();
 void clavier_PIT ();
 
 /* Lit sur l'entree standard */
-void lire_clavier (char* tmp, int32_t taille, int8_t mode);
+char *lire_clavier (int32_t taille, int8_t mode);
 
 /* Traite l'appui sur une touche */
 void traiter_touche (int8_t c);

@@ -1,0 +1,92 @@
+#include <inttypes.h>
+#include <string.h>
+#include "gui.h"
+#include "malloc.h"
+#include "shell.h"
+#include "ecran.h"
+#include "clavier.h"
+#include "historique.h"
+
+extern int32_t ligne;
+extern int32_t colonne;
+extern uint16_t format;
+
+extern char buffer[MAX_TAILLE_BUFFER];
+extern int32_t indice;
+
+extern char utilisateur[TAILLE_LOGIN];
+
+char historique[TAILLE_HISTORIQUE][MAX_TAILLE_BUFFER];
+
+int32_t prochain = 0;
+int32_t a_copier = 0;
+
+void ajouter_historique (char* s) {
+    int32_t i;
+    
+    if(prochain == TAILLE_HISTORIQUE - 1){
+        for(i = 1; i < TAILLE_HISTORIQUE; i++)
+            strcpy(historique[prochain - 1], historique[prochain]);
+        
+        strcpy(historique[prochain], s);
+        a_copier = prochain;
+    }else{
+        strcpy(historique[prochain], s);
+        prochain++;
+        a_copier = prochain;
+    }
+}
+
+void copier_dans_buffer (int8_t sens) {
+    int32_t i;
+    
+    if(sens < 0){
+        if(a_copier > 0){
+            a_copier--;
+            
+            vider_buffer();
+            prompt_shell();
+            strcpy(buffer, historique[a_copier]);
+            indice = strlen(historique[a_copier]);
+        
+            printf("%s", buffer);
+
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+                printf(" ");
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+                printf("\b");
+        }
+    }else{
+        if(a_copier < prochain - 1){
+            a_copier++;
+            
+            vider_buffer();
+            prompt_shell();
+            strcpy(buffer, historique[a_copier]);
+            indice = strlen(historique[a_copier]);
+        
+            printf("%s", buffer);
+
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+                printf(" ");
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
+                printf("\b");
+        }else if(a_copier < prochain){
+            a_copier++;
+
+            vider_buffer();
+            prompt_shell();
+
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN; i++)
+                printf(" ");
+            for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN; i++)
+                printf("\b");
+        }
+    }
+}
+
+
+
+
+
+
