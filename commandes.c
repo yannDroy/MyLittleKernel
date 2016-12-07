@@ -23,6 +23,8 @@ extern char ancien_utilisateur[TAILLE_LOGIN];
 
 extern uint8_t format;
 
+extern int32_t temps_veille_sec;
+
 extern int32_t arret;
 
 void test (void *n) {
@@ -68,6 +70,11 @@ void rand (void *n) {
 void init_rand (void *n) {
     sti();
     srand((int32_t) n);
+}
+
+void set_veille (void *n) {
+    sti();
+    temps_veille_sec = (int32_t) n;
 }
 
 void infinity () {
@@ -128,7 +135,7 @@ void su () {
             }
         }
 
-        printf("Erreur d'authentification\n");
+        printf("Echec d'authentification\n");
     }else{
         printf("Vous etes deja super utilisateur\n");
     }
@@ -194,12 +201,12 @@ void quitter (void* arret) {
         }else{
             printf("Bye.\n");
             *((int32_t*)arret) = 1;
-            dors(1);
+            dors(2);
         }
     }else{
         printf("Bye.\n");
         *((int32_t*)arret) = 1;
-        dors(1);
+        dors(2);
     }
 }
 
@@ -217,6 +224,7 @@ void help () {
     printf("  - jobs : affiche les processus en cours d'execution\n");
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
     printf("  - time : donne le temps d'allumage du systeme\n");
+    printf("  - set_veille : change le delai avant l'ecran de veille (30s par defaut)\n");
     printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
     printf("  - help : affiche cette aide\n");
@@ -237,7 +245,8 @@ void help () {
     //printf(" Divers :\n");
     printf("  - hello [<chaine>] : dit bonjour\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire\n");
-    printf("  - test [<entier>]: cree des tests, recursivement selon <entier>\n");
+    printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");
+    printf("  - veille : lance l'ecran de veille\n");
     printf("  - infinity : boucle infinie\n");
 }
 

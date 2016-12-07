@@ -28,14 +28,9 @@ void init () {
     if(pid > 0)
         attendre_terminaison(pid);
 
-    detruire_barre();
+    cli();
     efface_ecran(0);
-    masque_IRQ(CANAL_CLOCK, 1);
-    masque_IRQ(CANAL_CLAVIER, 1);
     
-    for(;;){
-        sti();
+    while(1)
         hlt();
-        cli();
-    }
 }

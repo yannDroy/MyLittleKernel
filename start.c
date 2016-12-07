@@ -16,7 +16,7 @@ void kernel_start () {
     init_clock();
     init_clavier();
 
-    srand(111);
+    srand(1);
 
     strncpy(utilisateur, "root\0", 5);
 

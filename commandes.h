@@ -16,6 +16,9 @@ void rand (void *n);
 /* Initialise la suite aleatoire */
 void init_rand (void *n);
 
+/* Temps apres lequel on lance l'ecran de veille */
+void set_veille (void *n);
+
 /* Processus infini */
 void infinity ();
 

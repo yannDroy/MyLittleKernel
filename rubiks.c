@@ -350,6 +350,7 @@ void rubiks () {
     char *input;
     int32_t n_scramble;
     int32_t nb;
+    int32_t coups;
     int32_t temps;
     int32_t jeu;
 
@@ -367,7 +368,7 @@ void rubiks () {
     lire_clavier(input, 4, VISIBLE);
     n_scramble = atoi(input);
 
-    nb = 0;
+    coups = 0;
     
     melanger(n_scramble);
     temps = nbr_secondes();
@@ -380,7 +381,7 @@ void rubiks () {
         free(input);
 
         if(est_resolu()){
-            printf(" Bravo, cube resolu en %d coup(s) et %d seconde(s) !\n\n", nb, nbr_secondes() - temps);
+            printf(" Bravo, cube resolu en %d coup(s) et %d seconde(s) !\n\n", coups, nbr_secondes() - temps);
             break;
         }else{
             input = (char*) malloc(4 * sizeof(char));
@@ -397,6 +398,9 @@ void rubiks () {
             case '2':
                 nb = 2;
                 break;
+            case '\'':
+                nb = 3;
+                break;
             default:
                 nb = 1;
             }
@@ -404,28 +408,33 @@ void rubiks () {
             switch(input[0]){
             case 'R':
                 turn_R_face(nb);
+                coups++;
                 break;
             case 'L':
                 turn_L_face(nb);
+                coups++;
                 break;
             case 'U':
                 turn_U_face(nb);
+                coups++;
                 break;
             case 'D':
                 turn_D_face(nb);
+                coups++;
                 break;
             case 'F':
                 turn_F_face(nb);
+                coups++;
                 break;
             case 'B':
                 turn_B_face(nb);
+                coups++;
                 break;
-            default:
+            case 'q':
                 printf("\n");
                 jeu = 0;
+                break;
             }
-
-            nb++;
         }
     }
 }

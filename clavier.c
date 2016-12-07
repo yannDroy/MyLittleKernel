@@ -3,6 +3,7 @@
 #include <inttypes.h>
 #include <string.h>
 #include "clavier.h"
+#include "gui.h"
 #include "ordonnancement.h"
 #include "interruption.h"
 #include "shell.h"
@@ -13,6 +14,10 @@ extern uint32_t colonne;
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern int32_t indice_dernier_attente;
+
+extern int8_t veille;
+extern int32_t temps_non_actif;
+extern int32_t temps_veille_sec;
 
 char buffer[MAX_TAILLE_BUFFER];
 
@@ -40,16 +45,26 @@ void clavier_PIT () {
         traiter_touche(c);
     }
 
+    temps_non_actif = 0;
+    
     sti();
 }
 
 void lire_clavier (char* tmp, int32_t taille, int8_t mode) {
+    int32_t pid;
+    
     vider_buffer();
     input = 1;
     rempli = 0;
     visible = mode;
     
-    while(!rempli && buffer[taille - 2] == '\0');
+    while(!rempli && buffer[taille - 2] == '\0'){
+        if(temps_non_actif >= temps_veille_sec){
+            pid = creer_processus(&ecran_veille, "veille\0", NULL);
+            if(pid > 0)
+                attendre_terminaison(pid);
+        }
+    }
 
     input = 0;
     rempli = 0;
@@ -125,6 +140,12 @@ void mettre_caractere_buffer (char nr, char sh, char ca, char al) {
 void traiter_touche (int8_t c) {
     char save;
     int32_t save_i;
+
+    
+    if(veille && c > 0){
+        veille = 0;
+        return;
+    }
     
     switch(c){
     case KB_ECHAP :

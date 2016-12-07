@@ -17,13 +17,13 @@
 #define C_NOM 40
 
 #define L_LOGIN 15
-#define C_LOGIN 21
+#define C_LOGIN 19
 
 #define L_IDENT_INCORR C_LOGIN
 #define C_IDENT_INCORR C_LOGIN
 
-/* Indique que la barre d'etat n'existe plus */
-void detruire_barre ();
+#define L_VEILLE 12
+#define C_VEILLE 30
 
 /* Met a jour la GUI */
 void maj_GUI (char *chaine, uint32_t col, uint8_t f);
@@ -45,5 +45,8 @@ void identifiants_incorrects ();
 
 /* Processus de login */
 void login ();
+
+/* Ecran de veille */
+void ecran_veille ();
 
 #endif

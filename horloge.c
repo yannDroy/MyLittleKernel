@@ -9,6 +9,7 @@
 #include "interruption.h"
 
 extern int8_t barre_existe;
+extern int32_t temps_non_actif;
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint8_t indice_actif;
@@ -30,11 +31,14 @@ void tic_PIT () {
     temps++;
 
     if(temps % CLOCKFREQ == 0){
-        sec = nbr_secondes();
-        sprintf(s, "%.2d:%.2d:%.2d", (sec / 3600), (sec % 3600) / 60, (sec % 3600) % 60);
-
-        if(barre_existe)
+        temps_non_actif++;
+        
+        if(barre_existe){
+            sec = nbr_secondes();
+            sprintf(s, "%.2d:%.2d:%.2d", (sec / 3600), (sec % 3600) / 60, (sec % 3600) % 60);
+        
             maj_GUI(s, C_MAJ_CLOCK, TEXTE_ROUGE | FOND_GRIS);
+        }
     }
 
     ordonnance();

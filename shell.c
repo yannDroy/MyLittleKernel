@@ -15,6 +15,7 @@
 
 extern void tictactoe ();
 extern void rubiks ();
+extern void ecran_veille ();
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint32_t nombre_processus;
@@ -51,7 +52,7 @@ void shell () {
     printf("commande 'help' pour afficher l'aide\n");
 
     arret = 0;
-    do{
+    do{ 
         commande = (char*) malloc(MAX_TAILLE_BUFFER * sizeof(char));
         for(i = 0; i < MAX_TAILLE_BUFFER; i++)
             commande[i] = '\0';
@@ -115,6 +116,15 @@ void executer_commande (char **tokens, int32_t *arret) {
     }else if(!strcmp(tokens[0], "tictactoe")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&tictactoe, "tictactoe\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "veille")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&ecran_veille, "veille\0", NULL);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{
@@ -288,6 +298,21 @@ void executer_commande (char **tokens, int32_t *arret) {
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "srand %d", param_int);
                 pid = creer_processus(&init_rand, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "set_veille")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "set_veille %d", param_int);
+                pid = creer_processus(&set_veille, nom, (void*) param_int);
                 if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{

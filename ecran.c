@@ -133,7 +133,7 @@ void defilement () {
 
 void console_putbytes (char *chaine, int32_t taille) {
     int i;
-    
+
     for(i = 0; i < taille; i++)
         traite_car(chaine[i]);
 }
