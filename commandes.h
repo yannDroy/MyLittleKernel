@@ -49,6 +49,9 @@ void kill (void *n);
 /* Quitte le mode super utilisateur ou quitte le shell */
 void quitter (void* arret);
 
+/* Deconnexion */
+void deconnexion (void* arret);
+
 /* Liste des processus */
 void jobs ();
 

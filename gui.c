@@ -48,6 +48,10 @@ void maj_GUI (char *chaine, uint32_t col, uint8_t f) {
     place_curseur(ligne, colonne);
 }
 
+void desactiver_barre () {
+    barre_existe = 0;
+}
+
 void creer_barre () {
     int32_t i;
     uint8_t save_format;
@@ -322,7 +326,7 @@ void ecran_veille () {
     
     efface_ecran(0);
     save_barre = barre_existe;
-    barre_existe = 0;
+    desactiver_barre();
 
     depart_l = crand48() % 15;
     depart_c = crand48() % 35;
@@ -427,6 +431,12 @@ void prompt_deverouillage () {
     save_l = ligne;
     save_c = colonne;
     save_format = format;
+
+    ligne = L_LOCK - 2;
+    colonne = C_LOCK;
+    place_curseur(ligne, colonne);
+    format = TEXTE_ROUGE | FOND_NOIR;
+    printf("%s", utilisateur);
     
     format = TEXTE_BLANC | FOND_ROUGE;
 
@@ -471,7 +481,7 @@ void verouiller () {
     save_format = format;
 
     efface_ecran(0);
-    barre_existe = 0;
+    desactiver_barre();
 
     save_temps_veille = temps_veille_sec;
     temps_veille_sec = 3;

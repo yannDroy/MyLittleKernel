@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include "init.h"
 #include "horloge.h"
 #include "ordonnancement.h"
 #include "aleatoire.h"
@@ -215,14 +216,22 @@ void quitter (void* arret) {
             maj_GUI(gui, C_MAJ_USER, TEXTE_MARRON | FOND_GRIS);
         }else{
             printf("Bye.\n");
-            *((int32_t*)arret) = 1;
-            dors(2);
+            *((int32_t*)arret) = ARRET;
+            dors(1);
         }
     }else{
         printf("Bye.\n");
-        *((int32_t*)arret) = 1;
-        dors(2);
+        *((int32_t*)arret) = ARRET;
+        dors(1);
     }
+}
+
+void deconnexion (void* arret) {
+    sti();
+    
+    printf("Deconnexion...\n");
+    *((int32_t*)arret) = DECONNEXION;
+    dors(1);
 }
 
 void help () {
@@ -244,6 +253,7 @@ void help () {
     printf("  - shell : lance un interpreteur de commandes\n");
     printf("  - lock : verouille la session\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
+    printf("  - logout : deconnexion\n");
     printf("  - help : affiche cette aide\n\n");
 
     format = TEXTE_JAUNE | FOND_NOIR;

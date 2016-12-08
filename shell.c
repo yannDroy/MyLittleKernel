@@ -2,6 +2,7 @@
 #include <string.h>
 #include <cpu.h>
 #include "ecran.h"
+#include "init.h"
 #include "clavier.h"
 #include "horloge.h"
 #include "malloc.h"
@@ -18,6 +19,8 @@ extern void tictactoe ();
 extern void rubiks ();
 extern void ecran_veille ();
 extern void verouiller ();
+
+extern int8_t continuer;
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint32_t nombre_processus;
@@ -64,8 +67,8 @@ void shell () {
     format = TEXTE_GRIS | FOND_NOIR;
     printf("commande 'help' pour afficher l'aide\n");
 
-    arret = 0;
-    do{
+    arret = MARCHE;
+    while(arret == MARCHE){
         tokens = (char**) malloc(MAX_TOKEN * sizeof(char*));
         for(i = 0; i < MAX_TOKEN; i++){
             tokens[i] = (char*) malloc(TAILLE_COMMANDE * sizeof(char));
@@ -90,7 +93,9 @@ void shell () {
             free(tokens[i]);
         free(tokens);
         free(commande);
-    }while(!arret);
+    }
+
+    continuer = arret;
 }
 
 void decouper_commande (char* chaine, char **tokens) {
@@ -121,6 +126,15 @@ void executer_commande (char **tokens, int32_t *arret) {
     if(!strcmp(tokens[0], "exit")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&quitter, "exit\0", (void*) arret);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "logout")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&deconnexion, "logout\0", (void*) arret);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{

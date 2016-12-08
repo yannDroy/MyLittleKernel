@@ -25,7 +25,7 @@
 #define L_VEILLE 12
 #define C_VEILLE 30
 
-#define L_LOCK 10
+#define L_LOCK 11
 #define C_LOCK 20
 
 /* Met a jour la GUI */
@@ -33,6 +33,9 @@ void maj_GUI (char *chaine, uint32_t col, uint8_t f);
 
 /* Affiche la barre de taches */
 void creer_barre ();
+
+/* Desactive la barre d'etat */
+void desactiver_barre ();
 
 /* Initie les affichages GUI */
 void init_affichage ();
