@@ -69,7 +69,7 @@ char *lire_clavier (int32_t taille, int8_t mode) {
         tmp[i] = '\0';
     
     while(!rempli && buffer[taille - 2] == '\0'){
-        if(temps_veille_sec > 0 && temps_non_actif >= temps_veille_sec){
+        if(temps_veille_sec >= 0 && temps_non_actif >= temps_veille_sec){
             pid = creer_processus(&ecran_veille, "veille\0", NULL);
             if(pid > 0)
                 attendre_terminaison(pid);

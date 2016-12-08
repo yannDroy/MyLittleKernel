@@ -17,13 +17,12 @@
 extern void tictactoe ();
 extern void rubiks ();
 extern void ecran_veille ();
+extern void verouiller ();
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint32_t nombre_processus;
 extern int32_t indice_actif;
 
-extern uint32_t ligne;
-extern uint32_t colonne;
 extern uint8_t format;
 
 extern int8_t historique_actif;
@@ -140,6 +139,15 @@ void executer_commande (char **tokens, int32_t *arret) {
     }else if(!strcmp(tokens[0], "veille")){
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&ecran_veille, "veille\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "lock")){
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&verouiller, "lock\0", NULL);
             if(pid > 0 && strcmp(tokens[1], "&"))
                 attendre_terminaison(pid);
         }else{

@@ -17,13 +17,16 @@
 #define C_NOM 40
 
 #define L_LOGIN 15
-#define C_LOGIN 19
+#define C_LOGIN 20
 
 #define L_IDENT_INCORR C_LOGIN
 #define C_IDENT_INCORR C_LOGIN
 
 #define L_VEILLE 12
 #define C_VEILLE 30
+
+#define L_LOCK 10
+#define C_LOCK 20
 
 /* Met a jour la GUI */
 void maj_GUI (char *chaine, uint32_t col, uint8_t f);
@@ -54,5 +57,11 @@ void choisir_theme (int32_t n, int8_t i);
 
 /* Ecran de veille */
 void ecran_veille ();
+
+/* Champ de mot de passe de deverouillage */
+void prompt_deverouillage ();
+
+/* Verouille la session */
+void verouiller ();
 
 #endif

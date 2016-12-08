@@ -187,13 +187,17 @@ void kill (void *n) {
     pid = (int32_t) n;
 
     if(pid >= 0 && pid < NB_MAX_PROCESSUS){
-        if(table_processus[pid].proprietaire == ROOT){
-            if(!strcmp(utilisateur, "root"))
+        if(pid != indice_actif){
+            if(table_processus[pid].proprietaire == ROOT){
+                if(!strcmp(utilisateur, "root"))
+                    tuer_processus(pid, 1);
+                else
+                    printf("Vous devez etre super utilisateur pour tuer ce processus\n");
+            }else{
                 tuer_processus(pid, 1);
-            else
-                printf("Vous devez etre super utilisateur pour tuer ce processus\n");
+            }
         }else{
-            tuer_processus(pid, 1);
+            printf("Vous ne pouvez pas tuer un processus en cours d'execution\n");
         }
     }else{
         printf("Aucun processus a tuer\n");
@@ -238,6 +242,7 @@ void help () {
     printf("  - set_veille <entier> : change le delai avant la veille (-1 desactive)\n");
     printf("  - veille : lance l'ecran de veille\n");
     printf("  - shell : lance un interpreteur de commandes\n");
+    printf("  - lock : verouille la session\n");
     printf("  - exit : sort du mode super utilisateur ou quitte le shell\n");
     printf("  - help : affiche cette aide\n\n");
 
