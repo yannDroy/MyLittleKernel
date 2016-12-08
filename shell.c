@@ -19,6 +19,7 @@ extern void tictactoe ();
 extern void rubiks ();
 extern void ecran_veille ();
 extern void verouiller ();
+extern void calc ();
 
 extern int8_t continuer;
 
@@ -52,8 +53,8 @@ void prompt_shell () {
 }
 
 void shell () {
-    char *commande = NULL;
-    char **tokens = NULL;
+    char *commande;
+    char **tokens;
     int32_t i, j;
     int32_t arret;
     
@@ -204,6 +205,15 @@ void executer_commande (char **tokens, int32_t *arret) {
             printf("Pas d'argument attendu !\n");
         }
 
+    }else if(!strcmp(tokens[0], "calc")) {
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&calc, "calc\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
     }else if(!strcmp(tokens[0], "su")) {
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&su, "su\0", NULL);
@@ -305,6 +315,21 @@ void executer_commande (char **tokens, int32_t *arret) {
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "beer %d", param_int);
                 pid = creer_processus(&beer, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "pascal")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "pascal %d", param_int);
+                pid = creer_processus(&pascal, nom, (void*) param_int);
                 if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{

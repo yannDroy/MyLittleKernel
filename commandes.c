@@ -36,6 +36,7 @@ void test (void *n) {
     creer_processus(&sleep, "sleep_test 120", (void*) 120);
     creer_processus(&sleep, "sleep_test 180", (void*) 180);
     creer_processus(&infinity, "infinity_test", NULL);
+    
     if((int32_t) n)
         creer_processus(&test, "test_dans_test", (void*) ((int32_t) n - 1));
 
@@ -261,6 +262,8 @@ void help () {
     printf("  - srand <entier> : initialise la suite d'entiers aleatoire\n");
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
     printf("  - fact <entier> : calcule la factorielle de <entier>\n\n");
+    printf("  - pascal <entier> : triangle de Pascal jusqu'a la <entier>-ieme ligne\n");
+    printf("  - calc : calculatrice en ligne de commandes (notation post-fixee)\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
     printf(" Jeux (srand avant, c'est bien) :\n");
@@ -386,4 +389,35 @@ void devine (void *n) {
 
         free(input);
     }
+}
+
+void pascal (void *n) {
+    int32_t **matrice;
+    int32_t lignes;
+    int32_t i, j;
+
+    lignes = (int32_t) n;
+    
+    matrice = (int32_t**) calloc(lignes, (sizeof(int*)));
+    for(i = 0; i < lignes; i++)
+        matrice[i] = (int32_t*) calloc((i + 1), (sizeof(int)));
+      
+    for(i = 0; i < lignes; i++)
+        matrice[i][0] = 1;
+
+    for(i = 1; i < lignes; i++){
+        for(j = 1; j < i; j++)
+            matrice[i][j] = matrice[i - 1][j - 1] + matrice[i - 1][j];
+        matrice[i][i] = 1;
+    }
+    
+    for(i = 0; i < lignes; i++){
+        for(j = 0; j < (i + 1); j++)
+            printf("%d ", matrice[i][j]);
+        printf("\n");
+    }
+      
+    for(i = 0; i < lignes; i++)
+        free(matrice[i]);
+    free(matrice);
 }

@@ -58,4 +58,7 @@ void jobs ();
 /* Jeu de devine le nombre (+ ou -) */
 void devine (void *n);
 
+/* Triangle de Pascal de profondeur n */
+void pascal (void *n);
+
 #endif

@@ -364,10 +364,6 @@ void rubiks () {
     printf(" Nombre de mouvements pour le melange ? ");
     sauvegarde_active = 0;
 
-    input = (char*) malloc(4 * sizeof(char));
-    for(nb = 0; nb < 4; nb++)
-        input[nb] = '\0';
-
     input = lire_clavier(4, VISIBLE);
     n_scramble = atoi(input);
 
