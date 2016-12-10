@@ -61,4 +61,10 @@ void devine (void *n);
 /* Triangle de Pascal de profondeur n */
 void pascal (void *n);
 
+/* Suite de Fibonacci jusqu'au rang n */
+void fibonacci (void *n);
+
+/* Dessine un joli triangle de n lignes */
+void triangle (void *n);
+
 #endif

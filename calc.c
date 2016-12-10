@@ -59,52 +59,46 @@ void calc () {
 void calculer_expression (liste p, int32_t n, char **op) {
     int32_t i;
     int32_t x, y;
-    int32_t r;
+    int32_t r, tmp;
 
     for(i = 0; i < n; i++){
         switch(op[i][0]){
         case '+':
-            x = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            y = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            r = x + y;
-            p = insere_element(r, p);
+            recuperer_operandes(p, &x, &y);
+            p = insere_element(x + y, p);
             break;
         case '*':
-            x = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            y = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            r = x * y;
-            p = insere_element(r, p);
+            recuperer_operandes(p, &x, &y);
+            p = insere_element(x * y, p);
             break;
         case '-':
             if(strlen(op[i]) == 1){
-                x = renvoie_premier_element(p);
-                p = supprimer_premier_element(p);
-                y = renvoie_premier_element(p);
-                p = supprimer_premier_element(p);
-                r = x - y;
-                p = insere_element(r, p);
+                recuperer_operandes(p, &x, &y);
+                p = insere_element(y - x, p);
             }else{
                 p = insere_element(atoi(op[i]), p);
             }
             break;
         case '/':
-            x = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            y = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            r = x / y;
-            p = insere_element(r, p);
+            recuperer_operandes(p, &x, &y);
+            p = insere_element(y / x, p);
             break;
         case '%':
-            x = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            y = renvoie_premier_element(p);
-            p = supprimer_premier_element(p);
-            r = y % x;
+            recuperer_operandes(p, &x, &y);
+            p = insere_element(y % x, p);
+            break;
+        case '^':
+            recuperer_operandes(p, &x, &y);
+            
+            r = 1;
+            if(x > 0){
+                for(tmp = 0; tmp < x; tmp++)
+                    r *= y;
+            }else if(x < 0){
+                for(tmp = 0; tmp > x; tmp--)
+                    r /= y;
+            }
+            
             p = insere_element(r, p);
             break;
         default:
@@ -117,6 +111,13 @@ void calculer_expression (liste p, int32_t n, char **op) {
 
     format = TEXTE_ROUGE | FOND_NOIR;
     printf(" %d\n", r);
+}
+
+void recuperer_operandes (liste p, int32_t *x, int32_t *y) {
+    *x = renvoie_premier_element(p);
+    p = supprimer_premier_element(p);
+    *y = renvoie_premier_element(p);
+    p = supprimer_premier_element(p); 
 }
 
 void decouper_expression (char* chaine, char **tokens, int32_t *n) {

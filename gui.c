@@ -10,6 +10,8 @@
 #include "horloge.h"
 #include "gui.h"
 
+extern int8_t systeme;
+
 extern int32_t nombre_processus;
 
 extern int32_t nb_utilisateurs;
@@ -19,6 +21,8 @@ extern char utilisateur[TAILLE_LOGIN];
 extern uint32_t ligne;
 extern uint32_t colonne;
 extern uint8_t format;
+
+extern int8_t scroll_actif;
 
 int8_t barre_existe = 0;
 int8_t veille = 0;
@@ -473,6 +477,8 @@ void verouiller () {
 
     sti();
 
+    scroll_actif = 0;
+
     save_ecran = (void*) malloc(NB_COLONNES * (NB_LIGNES - 1) * sizeof(uint16_t));
     memcpy(save_ecran, ptr_mem(PREMIERE_LIGNE, PREMIERE_COLONNE), (NB_COLONNES * (NB_LIGNES - 1) * sizeof(uint16_t)));
 
@@ -511,6 +517,8 @@ void verouiller () {
     free(save_ecran);
 
     init_affichage();
+
+    scroll_actif = 1;
 
     temps_veille_sec = save_temps_veille;
 

@@ -3,53 +3,55 @@
 #include "liste.h"
 
 liste liste_vide () {
-  return NULL;
+    return NULL;
 }
 
 int32_t est_vide (liste l) {
-  return (l == liste_vide());
+    return (l == liste_vide());
 }
 
 liste insere_element (int element, liste l) {
-  liste new = liste_vide();
+    liste new = liste_vide();
 
-  new = (liste) malloc(sizeof(cellule));
-  new->valeur = element;
-  new->suivant = l;
+    new = (liste) malloc(sizeof(cellule));
+    new->valeur = element;
+    new->suivant = l;
   
-  return new;
+    return new;
 }
 
 int32_t renvoie_premier_element (liste l) {
-  if(est_vide(l)){
-    printf("Pas de premier element\n");
-    return -1;
-  }
+    if(est_vide(l)){
+        printf("Pas de premier element a renvoyer\n");
+        return -1;
+    }
 
-  return l->valeur;
+    return l->valeur;
 }
 
 liste supprimer_premier_element (liste l) {
-  liste next = NULL;
+    liste next = NULL;
   
-  if(est_vide(l))
-    return l;
+    if(est_vide(l)){
+        printf("Tentative de suppression sur liste vide\n");
+        return l;
+    }
   
-  next = l->suivant;
-  free(l);
+    next = l->suivant;
+    free(l);
   
-  return next;
+    return next;
 }
 
 void affiche_liste (liste l) {
-  liste tmp = l;
+    liste tmp = l;
 
-  printf("< ");
+    printf("< ");
 
-  while(!est_vide(tmp)){
-    printf("%d ",tmp->valeur);
-    tmp = tmp->suivant;
-  }
+    while(!est_vide(tmp)){
+        printf("%d ",tmp->valeur);
+        tmp = tmp->suivant;
+    }
 
-  printf(">\n");
+    printf(">\n");
 }

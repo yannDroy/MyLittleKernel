@@ -10,13 +10,13 @@ extern int32_t indice;
 
 int32_t tabulation_active = 0;
 
-int32_t nb_commandes = 26;
-char commandes[26][TAILLE_COMMANDE] = {
+int32_t nb_commandes = 27;
+char commandes[27][TAILLE_COMMANDE] = {
     "clear", "su", "users", "jobs", "sleep", "time",
     "set_veille", "veille", "shell", "exit", "help", "srand",
     "rand", "fact", "tictactoe", "devine", "rubiks", "hello",
     "beer", "test", "infinity", "lock", "logout", "pascal",
-    "calc", "enigma"
+    "calc", "fibo", "triangle"
 };
 
 void tabuler () {

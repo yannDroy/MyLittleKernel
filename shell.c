@@ -8,6 +8,8 @@
 #include "malloc.h"
 #include "gui.h"
 #include "historique.h"
+#include "aleatoire.h"
+#include "scroll.h"
 #include "ordonnancement.h"
 #include "commandes.h"
 #include "atoi.h"
@@ -21,7 +23,7 @@ extern void ecran_veille ();
 extern void verouiller ();
 extern void calc ();
 
-extern int8_t continuer;
+extern int8_t systeme;
 
 extern Processus table_processus[TAILLE_TABLE_PROCESSUS];
 extern uint32_t nombre_processus;
@@ -62,6 +64,9 @@ void shell () {
 
     strcpy(ancien_utilisateur, utilisateur);
 
+    vider_historique_commandes();
+    vider_historique_ecran();
+
     format = TEXTE_JAUNE | FOND_NOIR;
     printf("\n  *** MyLittleKernel 0.1 ***\n\n");
 
@@ -70,6 +75,8 @@ void shell () {
 
     arret = MARCHE;
     while(arret == MARCHE){
+        srand(nbr_secondes());
+        
         tokens = (char**) malloc(MAX_TOKEN * sizeof(char*));
         for(i = 0; i < MAX_TOKEN; i++){
             tokens[i] = (char*) malloc(TAILLE_COMMANDE * sizeof(char));
@@ -96,7 +103,10 @@ void shell () {
         free(commande);
     }
 
-    continuer = arret;
+    systeme = arret;
+
+    vider_historique_commandes();
+    vider_historique_ecran();
 }
 
 void decouper_commande (char* chaine, char **tokens) {
@@ -390,6 +400,36 @@ void executer_commande (char **tokens, int32_t *arret) {
                 param_int = atoi(tokens[1]);
                 sprintf(nom, "sleep %d", param_int);
                 pid = creer_processus(&sleep, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "fibo")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "fibo %d", param_int);
+                pid = creer_processus(&fibonacci, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+
+    }else if(!strcmp(tokens[0], "triangle")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "triangle %d", param_int);
+                pid = creer_processus(&triangle, nom, (void*) param_int);
                 if(pid > 0 && strcmp(tokens[2], "&"))
                     attendre_terminaison(pid);
             }else{

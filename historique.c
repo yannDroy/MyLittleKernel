@@ -71,3 +71,13 @@ void copier (char *s) {
     for(i = 0; i < TAILLE_COMMANDE * MAX_TOKEN - strlen(buffer); i++)
         printf("\b");
 }
+
+void vider_historique_commandes () {
+    int32_t i;
+
+    for(i = 0; i < TAILLE_HISTORIQUE; i++)
+        strcpy(historique[i], "");
+
+    prochain = 0;
+    a_copier = 0;
+}

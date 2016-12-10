@@ -32,4 +32,7 @@ void tout_scroller_bas ();
 /* Sauvegarde une ligne d'indice i */
 void sauvegarde_ligne (uint32_t i);
 
+/* Supprime les lignes d'ecran sauvegardees */
+void vider_historique_ecran ();
+
 #endif

@@ -12,4 +12,7 @@ void copier ();
 /* Charge une ligne de l'historique */
 void charger_dans_buffer (int8_t sens);
 
+/* Vide l'historique */
+void vider_historique_commandes ();
+
 #endif

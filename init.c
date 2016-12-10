@@ -13,27 +13,29 @@
 
 extern char utilisateur[TAILLE_LOGIN];
 
-int8_t continuer;
+int8_t systeme;
 
 void init () {
     int32_t pid;
 
     sti();
 
-    continuer = MARCHE;
-    while(continuer != ARRET){
+    systeme = MARCHE;
+    while(systeme != ARRET){
         efface_ecran(0);
 
         pid = creer_processus(&login, "login\0", NULL);
         if(pid > 0)
             attendre_terminaison(pid);
-
-        printf("\f");
-        init_affichage();
+        
+        if(systeme != ARRET){
+            printf("\f");
+            init_affichage();
     
-        pid = creer_processus(&shell, "shell\0", NULL);
-        if(pid > 0)
-            attendre_terminaison(pid);
+            pid = creer_processus(&shell, "shell\0", NULL);
+            if(pid > 0)
+                attendre_terminaison(pid);
+        }
 
         desactiver_barre();
         strcpy(utilisateur, "root\0");

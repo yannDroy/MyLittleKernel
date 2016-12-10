@@ -5,6 +5,7 @@
 #include "scroll.h"
 
 int8_t sauvegarde_active = 0;
+int8_t scroll_actif = 1;
 
 uint16_t *sauvegarde_haut[NB_LIGNES_SAUVEGARDE];
 uint16_t *sauvegarde_bas[NB_LIGNES_SAUVEGARDE];
@@ -72,7 +73,7 @@ void supprimer_sauvegarde_bas () {
 }
 
 void scroll_haut () {
-    if(a_copier_haut > 0){
+    if(a_copier_haut > 0 && scroll_actif){
         sauvegarde_derniere_ligne();
 
         a_copier_haut--;
@@ -86,7 +87,7 @@ void scroll_haut () {
 }
 
 void scroll_bas () {
-    if(a_copier_bas > 0){
+    if(a_copier_bas > 0 && scroll_actif){
         sauvegarde_premiere_ligne();
 
         a_copier_bas--;
@@ -100,12 +101,12 @@ void scroll_bas () {
 }
 
 void tout_scroller_haut () {
-    while(a_copier_haut > 0)
+    while(a_copier_haut > 0 && scroll_actif)
         scroll_haut();
 }
 
 void tout_scroller_bas () {
-    while(a_copier_bas > 0)
+    while(a_copier_bas > 0 && scroll_actif)
         scroll_bas();
 }
 
@@ -131,4 +132,19 @@ void sauvegarde_ligne (uint32_t l) {
         prochain_haut++;
         a_copier_haut = prochain_haut;
     }
+}
+
+void vider_historique_ecran () {
+    int32_t i;
+
+    for(i = 0; i < prochain_haut; i++)
+        free(sauvegarde_haut[i]);
+
+    for(i = 0; i < prochain_bas; i++)
+        free(sauvegarde_bas[i]);
+
+    prochain_haut = 0;
+    prochain_bas = 0;
+    a_copier_haut = 0;
+    a_copier_bas = 0;
 }

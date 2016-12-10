@@ -4,6 +4,7 @@
 #include <string.h>
 #include "clavier.h"
 #include "malloc.h"
+#include "init.h"
 #include "gui.h"
 #include "tabulation.h"
 #include "historique.h"
@@ -12,6 +13,8 @@
 #include "interruption.h"
 #include "shell.h"
 #include "ecran.h"
+
+extern int8_t systeme;
 
 extern uint32_t ligne;
 extern uint32_t colonne;
@@ -391,13 +394,16 @@ void traiter_touche (int8_t c) {
         break;
     case KB_C :
         if(ctrl){
-            if(strcmp(table_processus[indice_dernier_attente].nom, "init")
-               && strcmp(table_processus[indice_dernier_attente].nom, "shell")
-               && strcmp(table_processus[indice_dernier_attente].nom, "login")){
-                table_processus[indice_dernier_attente].etat = ATTENTE_TERM;
-                if(colonne > PREMIERE_COLONNE)
-                    printf("\n");
-                ordonnance();
+            if(indice_dernier_attente > 0){
+                if(strcmp(table_processus[indice_dernier_attente].nom, "init")){
+                    if(!strcmp(table_processus[indice_dernier_attente].nom, "login"))
+                        systeme = ARRET;
+                    
+                    table_processus[indice_dernier_attente].etat = ATTENTE_TERM;
+                    if(colonne > PREMIERE_COLONNE)
+                        printf("\n");
+                    ordonnance();
+                }
             }
         }else{
             mettre_caractere_buffer('c', 'C', 'C', 0);

@@ -263,6 +263,7 @@ void help () {
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
     printf("  - fact <entier> : calcule la factorielle de <entier>\n\n");
     printf("  - pascal <entier> : triangle de Pascal jusqu'a la <entier>-ieme ligne\n");
+    printf("  - fibo <entier> : suite de Fibonacci jusqu'au rang U_<entier>\n");
     printf("  - calc : calculatrice en ligne de commandes (notation post-fixee)\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
@@ -275,6 +276,7 @@ void help () {
     printf(" Divers :\n");
     printf("  - hello [<chaine>] : dit bonjour <chaine> ('world' par defaut)\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire...\n");
+    printf("  - triangle <entier> : dessine un joli triangle de <entier> lignes\n");
     printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");
     printf("  - infinity : boucle infinie\n");
 }
@@ -410,14 +412,63 @@ void pascal (void *n) {
             matrice[i][j] = matrice[i - 1][j - 1] + matrice[i - 1][j];
         matrice[i][i] = 1;
     }
-    
+
     for(i = 0; i < lignes; i++){
         for(j = 0; j < (i + 1); j++)
-            printf("%d ", matrice[i][j]);
+            printf(" %d", matrice[i][j]);
         printf("\n");
     }
-      
+ 
     for(i = 0; i < lignes; i++)
         free(matrice[i]);
     free(matrice);
+}
+
+void fibonacci (void *n) {
+    int32_t i;
+    int32_t tmp;
+    int32_t u0;
+    int32_t u1;
+    
+    sti();
+    
+    u0 = 1;
+    u1 = 1;
+
+    if((int32_t) n < 0){
+        printf("Le parametre doit etre un entier positif ou nul\n");
+        return;
+    }
+
+    printf(" 1");
+    for(i = 0; i < (int32_t) n; i++){
+        tmp = u0 + u1;
+        u0 = u1;
+        u1 = tmp;
+        printf(" %d", u0);
+    }
+
+    printf("\n");
+}
+
+void triangle (void *n) {
+    int32_t lignes;
+    int32_t nb_espaces, nb_etoiles;
+    int32_t i, j;
+
+    lignes = (int32_t) n;
+    
+    for(i = 1; i <= lignes; i++){
+        nb_etoiles = (2 * i) - 1;
+        nb_espaces = (((2 * lignes) - 1) - nb_etoiles) / 2;
+        
+        for(j = 0; j < nb_espaces ; j++)
+            printf(" ");
+        for(j = 0; j < nb_etoiles ; j++){
+            format = (crand48() % 15 + 1) | FOND_NOIR;
+            printf("*");
+        }
+        
+        printf("\n");
+    }
 }

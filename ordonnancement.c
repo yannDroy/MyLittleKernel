@@ -18,7 +18,7 @@ extern int8_t barre_existe;
 Processus table_processus[TAILLE_TABLE_PROCESSUS];
 uint32_t nombre_processus;
 int32_t indice_actif;
-int32_t indice_dernier_attente;
+int32_t indice_dernier_attente = -1;
 
 uint8_t mon_pid () {
     return table_processus[indice_actif].pid;
@@ -214,7 +214,6 @@ int32_t creer_processus_init () {
         indice_actif = 0;
         
         nombre_processus = 1;
-        //maj_GUI("PROCESSUS :   1", C_MAJ_PROC, TEXTE_BLEU | FOND_GRIS);
 
         return 0;
     }
