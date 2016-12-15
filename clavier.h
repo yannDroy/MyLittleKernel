@@ -32,7 +32,7 @@ void init_clavier ();
 void vider_buffer ();
 
 /* Place un caractere dans le buffer */
-void mettre_caractere_buffer (char nr, char sh, char ca, char al);
+void mettre_caractere_buffer (char nr, char sh, char al);
 
 /* Recupere le code de la touche appuyee */
 int8_t recuperer_code (int8_t c);

@@ -105,7 +105,7 @@ void vider_buffer () {
     indice = 0;
 }
 
-void mettre_caractere_buffer (char nr, char sh, char ca, char al) {
+void mettre_caractere_buffer (char nr, char sh, char al) {
     char a_mettre;
     char save_1;
     char save_2;
@@ -115,15 +115,26 @@ void mettre_caractere_buffer (char nr, char sh, char ca, char al) {
 
     a_mettre = 0;
 
-    if(shift && sh)
-        a_mettre = sh;
-    else if(caps && ca)
-        a_mettre = ca;
-    else if(alt && al)
+    if(alt && al && !shift && !caps){
         a_mettre = al;
-    else if(nr)
+    }else if((shift || caps) && sh && !alt){
+        if(caps && shift){
+            if(sh >= '0' && sh <= '9')
+                a_mettre = sh;
+            else
+                a_mettre = nr;
+        }else if(caps){
+            if(nr >= 'a' && sh <= 'z')
+                a_mettre = sh;
+            else
+                a_mettre = nr;
+        }else{
+            a_mettre = sh;
+        }
+    }else{
         a_mettre = nr;
-
+    }
+    
     if(a_mettre){
         if(!inser){
             save_i = indice;
@@ -278,37 +289,37 @@ void traiter_touche (int8_t c) {
         shift = 1 - shift;
         break;
     case KB_CHEVRON :
-        mettre_caractere_buffer('<', '>', '<', '|');
+        mettre_caractere_buffer('<', '>', '|');
         break;
     case KB_PAR_FER :
-        mettre_caractere_buffer(')', ')', ')', ']');
+        mettre_caractere_buffer(')', ')', ']');
         break;
     case KB_EGAL :
-        mettre_caractere_buffer('=', '+', '=', '}');
+        mettre_caractere_buffer('=', '+', '}');
         break;
     case KB_CHAPEAU :
-        mettre_caractere_buffer('^', '^', '^', 0);
+        mettre_caractere_buffer('^', '^', 0);
         break;
     case KB_DOLLAR :
-        mettre_caractere_buffer('$', 0, '$', 0);
+        mettre_caractere_buffer('$', 0, 0);
         break;
     case KB_POURCENT :
-        mettre_caractere_buffer(0, '%', 0, 0);
+        mettre_caractere_buffer(0, '%', 0);
         break;
     case KB_MULT :
-        mettre_caractere_buffer('*', 0, '*', 0);
+        mettre_caractere_buffer('*', 0, 0);
         break;
     case KB_VIRG :
-        mettre_caractere_buffer(',', '?', ',', 0);
+        mettre_caractere_buffer(',', '?', 0);
         break;
     case KB_PVIRG :
-        mettre_caractere_buffer(';', '.', ';', 0);
+        mettre_caractere_buffer(';', '.', 0);
         break;
     case KB_DPOINTS :
-        mettre_caractere_buffer(':', '/', ':', 0);
+        mettre_caractere_buffer(':', '/', 0);
         break;
     case KB_EXCL :
-        mettre_caractere_buffer('!', 0, '!', 0);
+        mettre_caractere_buffer('!', 0, 0);
         break;
     case KB_BACKSPACE :
         tout_scroller_bas();
@@ -357,40 +368,40 @@ void traiter_touche (int8_t c) {
         shift = 1 - shift;
         break;
     case KB_1 :
-        mettre_caractere_buffer('&', '1', '&', 0);
+        mettre_caractere_buffer('&', '1', 0);
         break;
     case KB_2 :
-        mettre_caractere_buffer(0, '2', 0, '~');
+        mettre_caractere_buffer(0, '2', '~');
         break;
     case KB_3 :
-        mettre_caractere_buffer('\"', '3', '\"', '#');
+        mettre_caractere_buffer('\"', '3', '#');
         break;
     case KB_4 :
-        mettre_caractere_buffer('\'', '4', '\'', '{');
+        mettre_caractere_buffer('\'', '4', '{');
         break;
     case KB_5 :
-        mettre_caractere_buffer('(', '5', '(', '[');
+        mettre_caractere_buffer('(', '5', '[');
         break;
     case KB_6 :
-        mettre_caractere_buffer('-', '6', '-', '|');
+        mettre_caractere_buffer('-', '6', '|');
         break;
     case KB_7 :
-        mettre_caractere_buffer(0, '7', 0, 0);
+        mettre_caractere_buffer(0, '7', 0);
         break;
     case KB_8 :
-        mettre_caractere_buffer('_', '8', '_', '\\');
+        mettre_caractere_buffer('_', '8', '\\');
         break;
     case KB_9 :
-        mettre_caractere_buffer(0, '9', 0, '^');
+        mettre_caractere_buffer(0, '9', '^');
         break;
     case KB_0 :
-        mettre_caractere_buffer(0, '0', 0, '@');
+        mettre_caractere_buffer(0, '0', '@');
         break;
     case KB_A :
-        mettre_caractere_buffer('a', 'A', 'A', 0);
+        mettre_caractere_buffer('a', 'A', 0);
         break;
     case KB_B :
-        mettre_caractere_buffer('b', 'B', 'B', 0);
+        mettre_caractere_buffer('b', 'B', 0);
         break;
     case KB_C :
         if(ctrl){
@@ -406,96 +417,96 @@ void traiter_touche (int8_t c) {
                 }
             }
         }else{
-            mettre_caractere_buffer('c', 'C', 'C', 0);
+            mettre_caractere_buffer('c', 'C', 0);
         }
         break;
     case KB_D :
-        mettre_caractere_buffer('d', 'D', 'D', 0);
+        mettre_caractere_buffer('d', 'D', 0);
         break;
     case KB_E :
-        mettre_caractere_buffer('e', 'E', 'E', 0);
+        mettre_caractere_buffer('e', 'E', 0);
         break;
     case KB_F :
-        mettre_caractere_buffer('f', 'F', 'F', 0);
+        mettre_caractere_buffer('f', 'F', 0);
         break;
     case KB_G :
-        mettre_caractere_buffer('g', 'G', 'G', 0);
+        mettre_caractere_buffer('g', 'G', 0);
         break;
     case KB_H :
-        mettre_caractere_buffer('h', 'H', 'H', 0);
+        mettre_caractere_buffer('h', 'H', 0);
         break;
     case KB_I :
-        mettre_caractere_buffer('i', 'I', 'I', 0);
+        mettre_caractere_buffer('i', 'I', 0);
         break;
     case KB_J :
-        mettre_caractere_buffer('j', 'J', 'J', 0);
+        mettre_caractere_buffer('j', 'J', 0);
         break;
     case KB_K :
-        mettre_caractere_buffer('k', 'K', 'K', 0);
+        mettre_caractere_buffer('k', 'K', 0);
         break;
     case KB_L :
-        mettre_caractere_buffer('l', 'L', 'L', 0);
+        mettre_caractere_buffer('l', 'L', 0);
         break;
     case KB_M :
-        mettre_caractere_buffer('m', 'M', 'M', 0);
+        mettre_caractere_buffer('m', 'M', 0);
         break;
     case KB_N :
-        mettre_caractere_buffer('n', 'N', 'N', 0);
+        mettre_caractere_buffer('n', 'N', 0);
         break;
     case KB_O :
-        mettre_caractere_buffer('o', 'O', 'O', 0);
+        mettre_caractere_buffer('o', 'O', 0);
         break;
     case KB_P :
-        mettre_caractere_buffer('p', 'P', 'P', 0);
+        mettre_caractere_buffer('p', 'P', 0);
         break;
     case KB_Q :
-        mettre_caractere_buffer('q', 'Q', 'Q', 0);
+        mettre_caractere_buffer('q', 'Q', 0);
         break;
     case KB_R :
-        mettre_caractere_buffer('r', 'R', 'R', 0);
+        mettre_caractere_buffer('r', 'R', 0);
         break;
     case KB_S :
-        mettre_caractere_buffer('s', 'S', 'S', 0);
+        mettre_caractere_buffer('s', 'S', 0);
         break;
     case KB_T :
-        mettre_caractere_buffer('t', 'T', 'T', 0);
+        mettre_caractere_buffer('t', 'T', 0);
         break;
     case KB_U :
-        mettre_caractere_buffer('u', 'U', 'U', 0);
+        mettre_caractere_buffer('u', 'U', 0);
         break;
     case KB_V :
-        mettre_caractere_buffer('v', 'V', 'V', 0);
+        mettre_caractere_buffer('v', 'V', 0);
         break;
     case KB_W :
-        mettre_caractere_buffer('w', 'W', 'W', 0);
+        mettre_caractere_buffer('w', 'W', 0);
         break;
     case KB_X :
-        mettre_caractere_buffer('x', 'X', 'X', 0);
+        mettre_caractere_buffer('x', 'X', 0);
         break;
     case KB_Y :
-        mettre_caractere_buffer('y', 'Y', 'Y', 0);
+        mettre_caractere_buffer('y', 'Y', 0);
         break;
     case KB_Z :
-        mettre_caractere_buffer('z', 'Z', 'Z', 0);
+        mettre_caractere_buffer('z', 'Z', 0);
         break;
     case KB_LCTRL :
-        ctrl = 1 - ctrl;
+        ctrl = 1;
         break;
     case KB_LCTRL - 128 :
-        ctrl = 1 - ctrl;
+        ctrl = 0;
         break;
     case KB_FN :
         break;
     case KB_WIN :
         break;
     case KB_ALT :
-        alt = 1 - alt;
+        alt = 1;
         break;
     case KB_ALT - 128:
-        alt = 1 - alt;
+        alt = 0;
         break;
     case KB_ESPACE :
-        mettre_caractere_buffer(' ', ' ', ' ', 0);
+        mettre_caractere_buffer(' ', ' ', 0);
         break;
     case KB_RCLICK :
         break;
