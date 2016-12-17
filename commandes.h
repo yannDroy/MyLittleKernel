@@ -7,6 +7,9 @@ void test (void *n);
 /* Nettoie l'ecran */
 void clear ();
 
+/* Nettoie l'ecran et supprime l'historique */
+void reset ();
+
 /* Hello world ! */
 void hello ();
 

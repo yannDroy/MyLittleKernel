@@ -8,6 +8,7 @@
 #include "aleatoire.h"
 #include "ecran.h"
 #include "clavier.h"
+#include "scroll.h"
 #include "atoi.h"
 #include "malloc.h"
 #include "gui.h"
@@ -49,6 +50,13 @@ void clear () {
     sauvegarde_active = 1;
     printf("\f");
     sauvegarde_active = 0;
+}
+
+void reset () {
+    sti();
+    
+    printf("\f");
+    vider_historique_ecran();
 }
 
 void hello (char *s) {
@@ -244,6 +252,7 @@ void help () {
     format = TEXTE_CYAN | FOND_NOIR;
     printf(" Systeme :\n");
     printf("  - clear : nettoie l'ecran\n");
+    printf("  - reset : nettoie l'ecran et supprime son historique\n");
     printf("  - su : passe en mode super utilisateur\n");
     printf("  - users : affiche la liste des utilisateurs du systeme\n");
     printf("  - jobs : affiche les processus en cours d'execution\n");
@@ -261,10 +270,10 @@ void help () {
     printf(" Mathematiques :\n");
     printf("  - srand <entier> : initialise la suite d'entiers aleatoire\n");
     printf("  - rand <entier> : calcule un entier aleatoire entre 0 et <entier>\n");
-    printf("  - fact <entier> : calcule la factorielle de <entier>\n\n");
+    printf("  - fact <entier> : calcule la factorielle de <entier>\n");
     printf("  - pascal <entier> : triangle de Pascal jusqu'a la <entier>-ieme ligne\n");
     printf("  - fibo <entier> : suite de Fibonacci jusqu'au rang U_<entier>\n");
-    printf("  - calc : calculatrice en ligne de commandes (notation post-fixee)\n");
+    printf("  - calc : calculatrice en ligne de commandes (notation post-fixee)\n\n");
 
     format = TEXTE_BLEU_C | FOND_NOIR;
     printf(" Jeux (srand avant, c'est bien) :\n");
@@ -287,9 +296,9 @@ void jobs () {
     sti();
 
     printf("   *** Liste des processus (%d) :\n", nombre_processus);
-    printf("  _____________________________________________________________\n");
-    printf(" | PID | PPID | PROPRIETAIRE |         nom         |    etat   |\n");
-    printf(" |-----+------+--------------+---------------------+-----------|\n");
+    printf("  ___________________________________________________________________________\n");
+    printf(" | PID | PPID | PROPRIETAIRE |                nom                |    etat   |\n");
+    printf(" |-----+------+--------------+-----------------------------------+-----------|\n");
     
     for(i = 0; i < NB_MAX_PROCESSUS; i++){
         if(table_processus[i].pid >= 0){
@@ -312,7 +321,7 @@ void jobs () {
             else
                 printf("  UTILISATEUR |");
 
-            for(j = 0; j < 20 - strlen(table_processus[i].nom); j++)
+            for(j = 0; j < MAX_PROC_NAME - strlen(table_processus[i].nom); j++)
                 printf(" ");
             printf("%s ", table_processus[i].nom);
 
@@ -339,7 +348,7 @@ void jobs () {
         }
     }
 
-    printf(" '-----+------+--------------+---------------------+-----------'\n");
+    printf(" '-----+------+--------------+-----------------------------------+-----------'\n");
 }
 
 void devine (void *n) {

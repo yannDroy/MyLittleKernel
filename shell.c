@@ -215,6 +215,15 @@ void executer_commande (char **tokens, int32_t *arret) {
             printf("Pas d'argument attendu !\n");
         }
 
+    }else if(!strcmp(tokens[0], "reset")) {
+        if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
+            pid = creer_processus(&reset, "reset\0", NULL);
+            if(pid > 0 && strcmp(tokens[1], "&"))
+                attendre_terminaison(pid);
+        }else{
+            printf("Pas d'argument attendu !\n");
+        }
+
     }else if(!strcmp(tokens[0], "calc")) {
         if(!strcmp(tokens[1], "") || !strcmp(tokens[1], "&")){
             pid = creer_processus(&calc, "calc\0", NULL);

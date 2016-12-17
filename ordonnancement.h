@@ -3,7 +3,7 @@
 
 #include <inttypes.h>
 
-#define MAX_PROC_NAME 100
+#define MAX_PROC_NAME 34
 
 #define TAILLE_PILE_EXEC 512
 
