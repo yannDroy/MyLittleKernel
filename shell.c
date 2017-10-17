@@ -75,7 +75,7 @@ void shell () {
 
     arret = MARCHE;
     while(arret == MARCHE){
-        srand(nbr_secondes());
+        //srand(nbr_secondes());
         
         tokens = (char**) malloc(MAX_TOKEN * sizeof(char*));
         for(i = 0; i < MAX_TOKEN; i++){
@@ -433,6 +433,21 @@ void executer_commande (char **tokens, int32_t *arret) {
             printf("Un entier attendu en parametre !\n");
         }
 
+    }else if(!strcmp(tokens[0], "fact")){
+        if(strcmp(tokens[1], "")){
+            if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
+                param_int = atoi(tokens[1]);
+                sprintf(nom, "fact %d", param_int);
+                pid = creer_processus(&fact, nom, (void*) param_int);
+                if(pid > 0 && strcmp(tokens[2], "&"))
+                    attendre_terminaison(pid);
+            }else{
+                printf("Un seul parametre attendu : entier !\n");
+            }
+        }else{
+            printf("Un entier attendu en parametre !\n");
+        }
+        
     }else if(!strcmp(tokens[0], "triangle")){
         if(strcmp(tokens[1], "")){
             if(!strcmp(tokens[2], "") || !strcmp(tokens[2], "&")){
