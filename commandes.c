@@ -34,14 +34,13 @@ extern int32_t arret;
 void test (void *n) {
     sti();
 
-    creer_processus(&sleep, "sleep_test 120", (void*) 120);
-    creer_processus(&sleep, "sleep_test 180", (void*) 180);
-    creer_processus(&infinity, "infinity_test", NULL);
+    creer_processus(&sleep, "sleep_test 30", (void*) 30);
+    creer_processus(&sleep, "sleep_test 60", (void*) 60);
     
     if((int32_t) n)
         creer_processus(&test, "test_dans_test", (void*) ((int32_t) n - 1));
 
-    while(1);
+    dors(90);
 }
 
 void clear () {
@@ -257,6 +256,7 @@ void help () {
     printf("  - users : affiche la liste des utilisateurs du systeme\n");
     printf("  - jobs : affiche les processus en cours d'execution\n");
     printf("  - sleep <entier> : sieste de <entier> secondes\n");
+    printf("  - kill <entier> : termine le processus de PID <entier>\n");
     printf("  - time : donne le temps d'allumage du systeme\n");
     printf("  - set_veille <entier> : change le delai avant la veille (-1 desactive)\n");
     printf("  - veille : lance l'ecran de veille\n");
@@ -286,7 +286,7 @@ void help () {
     printf("  - hello [<chaine>] : dit bonjour <chaine> ('world' par defaut)\n");
     printf("  - beer <entier> : il reste <entier> biere(s) a boire...\n");
     printf("  - triangle <entier> : dessine un joli triangle de <entier> lignes\n");
-    printf("  - test [<entier>]: cree des tests de profondeur <entier> (1 par defaut)\n");
+    printf("  - test [<entier>]: cree 3 * <entier> + 3 processus de test\n");
     printf("  - infinity : boucle infinie\n");
 }
 
